@@ -10,9 +10,10 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.rmblack.vocabularyof12sgrade.logic.Word
 
-
 class WordAdapter(private val wordList : ArrayList<Word>)
     : RecyclerView.Adapter<WordAdapter.WordVH>() {
+
+    private lateinit var holder: WordVH
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordVH {
         val view = LayoutInflater.from(parent.context).inflate(com.rmblack.vocabularyof12sgrade.R.layout.word_row, parent, false)
@@ -20,6 +21,7 @@ class WordAdapter(private val wordList : ArrayList<Word>)
     }
 
     override fun onBindViewHolder(holder: WordVH, position: Int) {
+        this.holder = holder
         holder.word.text = wordList[position].word
         holder.meaning.text = wordList[position].meaning
         holder.meaning.bringToFront()
@@ -37,7 +39,7 @@ class WordAdapter(private val wordList : ArrayList<Word>)
         }
     }
 
-    private fun resizeWordCard(holder: WordVH, size: Int) {
+    fun resizeWordCard(holder: WordVH, size: Int) {
         val params = holder.wordCard.layoutParams as ViewGroup.MarginLayoutParams
         val bottomMarginStart = params.bottomMargin // your start value
         val a = object : Animation() {

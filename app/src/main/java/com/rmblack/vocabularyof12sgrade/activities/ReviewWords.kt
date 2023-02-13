@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.animation.Animation
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
@@ -21,7 +20,7 @@ class ReviewWords : AppCompatActivity() {
     private lateinit var wordsViewPager: ViewPager2
     private lateinit var handler: Handler
     private lateinit var wordList: ArrayList<Word>
-    private lateinit var adapter: WordAdapter
+    private lateinit var wordsAdapter: WordAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +33,6 @@ class ReviewWords : AppCompatActivity() {
         init()
         setUpTransformer()
     }
-
 
     private fun setUpTransformer() {
         val transformer = CompositePageTransformer()
@@ -64,12 +62,45 @@ class ReviewWords : AppCompatActivity() {
         words.add(w4)
         words.add(w5)
         wordList = words
-        adapter = WordAdapter(wordList)
-        wordsViewPager.adapter = adapter
+
+        wordsAdapter = WordAdapter(wordList)
+        wordsViewPager.adapter = wordsAdapter
         wordsViewPager.offscreenPageLimit = 3
         wordsViewPager.clipToPadding = false
         wordsViewPager.clipChildren = false
         wordsViewPager.getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
+
+        handleWordCardWhenSwiping(words)
+    }
+
+    private fun handleWordCardWhenSwiping(words: ArrayList<Word>) {
+        wordsViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+                if (words[position].answerVisibility) {
+                    val viewHolder: WordAdapter.WordVH =
+                        (wordsViewPager.getChildAt(0) as RecyclerView).findViewHolderForAdapterPosition(
+                            position
+                        ) as WordAdapter.WordVH
+                    wordsAdapter.resizeWordCard(viewHolder, 80)
+                    words[position].answerVisibility = !words[position].answerVisibility
+                }
+                if (position + 1 < wordsAdapter.itemCount) {
+                    if (words[position + 1].answerVisibility) {
+                        val viewHolder: WordAdapter.WordVH =
+                            (wordsViewPager.getChildAt(0) as RecyclerView).findViewHolderForAdapterPosition(
+                                position + 1
+                            ) as WordAdapter.WordVH
+                        wordsAdapter.resizeWordCard(viewHolder, 80)
+                        words[position + 1].answerVisibility = !words[position + 1].answerVisibility
+                    }
+                }
+            }
+        })
     }
 
 }
