@@ -1,13 +1,17 @@
 package com.rmblack.vocabularyof12sgrade.adapter
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.Transformation
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.rmblack.vocabularyof12sgrade.R
 import com.rmblack.vocabularyof12sgrade.logic.Word
 
 class WordAdapter(private val wordList : ArrayList<Word>)
@@ -22,9 +26,7 @@ class WordAdapter(private val wordList : ArrayList<Word>)
 
     override fun onBindViewHolder(holder: WordVH, position: Int) {
         this.holder = holder
-        holder.word.text = wordList[position].word
-        holder.meaning.text = wordList[position].meaning
-        holder.meaning.bringToFront()
+        Init(holder, position)
 
         val word : Word = wordList[position]
 
@@ -33,9 +35,33 @@ class WordAdapter(private val wordList : ArrayList<Word>)
             if (word.answerVisibility) {
                 val size = holder.meaning.measuredHeight
                 resizeWordCard(holder, size + 110)
+                changeEyeIcon(true, holder)
             } else {
                 resizeWordCard(holder, 80)
+                holder.showAnswerImg.setImageResource(R.drawable.close_eye_icon)
+                holder.showAnswerImg.setBackgroundResource(R.color.white)
+                changeEyeIcon(false, holder)
+
             }
+        }
+    }
+
+    private fun Init(
+        holder: WordVH,
+        position: Int
+    ) {
+        holder.word.text = wordList[position].word
+        holder.meaning.text = wordList[position].meaning
+        holder.meaning.bringToFront()
+    }
+
+    fun changeEyeIcon(open: Boolean, holder: WordVH) {
+        if (open) {
+            holder.showAnswerImg.setImageResource(R.drawable.open_eye)
+            holder.showAnswerImg.setBackgroundResource(R.color.purple)
+        } else {
+            holder.showAnswerImg.setImageResource(R.drawable.close_eye_icon)
+            holder.showAnswerImg.setBackgroundResource(R.color.white)
         }
     }
 
@@ -59,9 +85,14 @@ class WordAdapter(private val wordList : ArrayList<Word>)
     }
 
     class WordVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val word : AppCompatTextView = itemView.findViewById(com.rmblack.vocabularyof12sgrade.R.id.word_tv)
-        val wordCard : CardView = itemView.findViewById(com.rmblack.vocabularyof12sgrade.R.id.word_card)
-        val meaning : AppCompatTextView = itemView.findViewById(com.rmblack.vocabularyof12sgrade.R.id.meaning_tv)
-        val showAnswerCard : CardView = itemView.findViewById(com.rmblack.vocabularyof12sgrade.R.id.show_answer_card)
+        val word : AppCompatTextView = itemView.findViewById(R.id.word_tv)
+        val wordCard : CardView = itemView.findViewById(R.id.word_card)
+        val meaning : AppCompatTextView = itemView.findViewById(R.id.meaning_tv)
+        val showAnswerCard : CardView = itemView.findViewById(R.id.show_answer_card)
+        val showAnswerImg : AppCompatImageView = itemView.findViewById(R.id.show_answer_img)
+        val checkImg : AppCompatImageView = itemView.findViewById(R.id.check_img)
+        val questionImg : AppCompatImageView = itemView.findViewById(R.id.question_img)
+        val checkCard : CardView = itemView.findViewById(R.id.check_card)
+        val questionCard : CardView = itemView.findViewById(R.id.question_card)
     }
 }

@@ -54,6 +54,22 @@ class ReviewWords : AppCompatActivity() {
         val w3 = Word("لغت تست سوم", "معنای سوم", 0)
         val w4 = Word("لغت تست چهارم", "معنای چهارم", 0)
         val w5 = Word("لغت تست پنجم", "معنای پنجم", 0)
+        val w6 = Word("لغت تست ششم", "معنای ششم", 0)
+        val w7 = Word("لغت تست هفتم", "معنای هفتم", 0)
+        val w8 = Word("لغت تست هشتم", "معنای هشتم", 0)
+        val w9 = Word("لغت تست نهم", "معنای نهم", 0)
+        val w10 = Word("لغت تست دهم", "معنای دهم", 0)
+        val w11 = Word("لغت تست یازدم", "معنای یازدهم", 0)
+        val w12 = Word("لغت تست دوازدهم", "معنای دوازدهم", 0)
+        val w13 = Word("لغت تست سیزدهم", "معنای سیزدهم", 0)
+        val w14 = Word("لغت تست چهاردهم", "معنای چهاردهم", 0)
+        val w15 = Word("لغت تست پانزدهم", "معنای پانزدهم", 0)
+        val w16 = Word("لغت تست شانزدهم", "معنای شانزدهم", 0)
+        val w17 = Word("لغت تست هفدهم", "معنای هفدهم", 0)
+        val w18 = Word("لغت تست هجدهم", "معنای هجدهم", 0)
+        val w19 = Word("لغت تست نونزدهم", "معنای نونزدهم", 0)
+        val w20 = Word("لغت تست بیستم", "معنای بیستم", 0)
+
 
         val words = ArrayList<Word> ()
         words.add(w1)
@@ -61,6 +77,23 @@ class ReviewWords : AppCompatActivity() {
         words.add(w3)
         words.add(w4)
         words.add(w5)
+        words.add(w6)
+        words.add(w7)
+        words.add(w8)
+        words.add(w9)
+        words.add(w10)
+        words.add(w11)
+        words.add(w12)
+        words.add(w13)
+        words.add(w14)
+        words.add(w15)
+        words.add(w16)
+        words.add(w17)
+        words.add(w18)
+        words.add(w19)
+        words.add(w20)
+
+
         wordList = words
 
         wordsAdapter = WordAdapter(wordList)
@@ -82,25 +115,25 @@ class ReviewWords : AppCompatActivity() {
             ) {
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels)
                 if (words[position].answerVisibility) {
-                    val viewHolder: WordAdapter.WordVH =
-                        (wordsViewPager.getChildAt(0) as RecyclerView).findViewHolderForAdapterPosition(
-                            position
-                        ) as WordAdapter.WordVH
-                    wordsAdapter.resizeWordCard(viewHolder, 80)
-                    words[position].answerVisibility = !words[position].answerVisibility
+                    hideAnswer(position, words)
                 }
                 if (position + 1 < wordsAdapter.itemCount) {
                     if (words[position + 1].answerVisibility) {
-                        val viewHolder: WordAdapter.WordVH =
-                            (wordsViewPager.getChildAt(0) as RecyclerView).findViewHolderForAdapterPosition(
-                                position + 1
-                            ) as WordAdapter.WordVH
-                        wordsAdapter.resizeWordCard(viewHolder, 80)
-                        words[position + 1].answerVisibility = !words[position + 1].answerVisibility
+                        hideAnswer(position + 1, words)
                     }
                 }
             }
         })
+    }
+
+    private fun hideAnswer(position : Int, words: ArrayList<Word>) {
+        val viewHolder: WordAdapter.WordVH =
+            (wordsViewPager.getChildAt(0) as RecyclerView).findViewHolderForAdapterPosition(
+                position
+            ) as WordAdapter.WordVH
+        wordsAdapter.resizeWordCard(viewHolder, 80)
+        wordsAdapter.changeEyeIcon(false, viewHolder)
+        words[position].answerVisibility = !words[position].answerVisibility
     }
 
 }

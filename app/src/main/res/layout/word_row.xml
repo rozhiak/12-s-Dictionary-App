@@ -88,8 +88,8 @@
 
     <androidx.cardview.widget.CardView
         android:layout_marginBottom="40dp"
-        app:layout_constraintEnd_toStartOf="@id/check_btn"
-        app:layout_constraintStart_toEndOf="@id/question_btn"
+        app:layout_constraintEnd_toStartOf="@id/check_card"
+        app:layout_constraintStart_toEndOf="@id/question_card"
         android:id="@+id/show_answer_card"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -100,9 +100,10 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/show_answer_img"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:padding="10dp"
+            android:padding="13dp"
             app:srcCompat="@drawable/close_eye_icon" />
 
     </androidx.cardview.widget.CardView>
@@ -110,7 +111,7 @@
     <androidx.cardview.widget.CardView
         android:layout_marginBottom="40dp"
         android:layout_marginStart="30dp"
-        android:id="@+id/check_btn"
+        android:id="@+id/check_card"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="70dp"
@@ -123,6 +124,7 @@
         app:layout_constraintStart_toEndOf="@+id/show_answer_card">
 
         <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/check_img"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:padding="12dp"
@@ -133,7 +135,7 @@
     <androidx.cardview.widget.CardView
         android:layout_marginBottom="40dp"
         android:layout_marginEnd="30dp"
-        android:id="@+id/question_btn"
+        android:id="@+id/question_card"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="70dp"
@@ -146,6 +148,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/question_img"
             android:layout_width="58dp"
             android:layout_height="62dp"
             android:padding="10dp"
