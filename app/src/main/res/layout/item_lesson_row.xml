@@ -111,6 +111,7 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <androidx.cardview.widget.CardView
+                            android:id="@+id/startReviewCard"
                             android:layout_marginStart="8dp"
                             app:cardCornerRadius="30dp"
                             android:backgroundTint="#2C8F66"

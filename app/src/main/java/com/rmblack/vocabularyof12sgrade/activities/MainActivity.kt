@@ -1,4 +1,4 @@
-package com.rmblack.vocabularyof12sgrade
+package com.rmblack.vocabularyof12sgrade.activities
 
 import android.os.Bundle
 import android.util.Log
@@ -6,12 +6,12 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.rmblack.vocabularyof12sgrade.R
 import com.rmblack.vocabularyof12sgrade.adapter.LessonsRecAdapter
 import com.rmblack.vocabularyof12sgrade.databinding.ActivityMainBinding
-import com.rmblack.vocabularyof12sgrade.databinding.ActivityReviewWordsBinding
 import com.rmblack.vocabularyof12sgrade.logic.Lesson
 import com.rmblack.vocabularyof12sgrade.server.RetrofitHelper
-import com.rmblack.vocabularyof12sgrade.server.URLsApi
+import com.rmblack.vocabularyof12sgrade.server.WordsApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -27,14 +27,10 @@ class MainActivity : AppCompatActivity() {
         //This line should be changed
         window.navigationBarColor = resources.getColor(R.color.teeth_white)
 
-        //Getting words urls from server
-        //Implement catch exception
-        val urlsApi = RetrofitHelper.getInstance().create(URLsApi::class.java)
-        GlobalScope.launch {
-            val result = urlsApi.getURLs()
-            Log.e("urls", result.body().toString())
-        }
+        initializeLessons()
+    }
 
+    private fun initializeLessons() {
         //Declare lessons
         val setayesh = Lesson("ستایش", "ملکا ذکر تو گویم", R.drawable.setayesh)
         val lessonOne = Lesson("درس اول", "شکر نعمت", R.drawable.one)
