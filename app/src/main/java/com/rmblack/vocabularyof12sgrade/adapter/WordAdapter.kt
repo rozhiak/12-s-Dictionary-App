@@ -1,6 +1,5 @@
 package com.rmblack.vocabularyof12sgrade.adapter
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,10 +8,9 @@ import android.view.animation.Transformation
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.rmblack.vocabularyof12sgrade.R
-import com.rmblack.vocabularyof12sgrade.logic.Word
+import com.rmblack.vocabularyof12sgrade.models.Word
 
 class WordAdapter(private val wordList : ArrayList<Word>)
     : RecyclerView.Adapter<WordAdapter.WordVH>() {

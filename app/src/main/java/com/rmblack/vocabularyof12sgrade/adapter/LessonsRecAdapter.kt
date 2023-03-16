@@ -1,7 +1,6 @@
 package com.rmblack.vocabularyof12sgrade.adapter
 
 import android.graphics.Color
-import android.telecom.Call
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,14 +12,17 @@ import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.rmblack.vocabularyof12sgrade.R
-import com.rmblack.vocabularyof12sgrade.logic.Lesson
+import com.rmblack.vocabularyof12sgrade.models.Lesson
+import com.rmblack.vocabularyof12sgrade.models.Word
+import com.rmblack.vocabularyof12sgrade.server.IService
 import com.rmblack.vocabularyof12sgrade.server.RetrofitHelper
-import com.rmblack.vocabularyof12sgrade.server.WordsApi
-import com.rmblack.vocabularyof12sgrade.server.models.URL
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import com.rmblack.vocabularyof12sgrade.models.URL
+import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
 
 class LessonsRecAdapter(private val lessons: List<Lesson>) : RecyclerView.Adapter<LessonsRecAdapter.ViewHolder>() {
 
@@ -94,30 +96,59 @@ class LessonsRecAdapter(private val lessons: List<Lesson>) : RecyclerView.Adapte
 
 
         holder.startReviewCard.setOnClickListener {
-            val urlsApi = RetrofitHelper.getInstance().create(WordsApi::class.java)
-            val call: retrofit2.Call<ArrayList<URL>> = urlsApi.getURLs()
-            call.enqueue(object : Callback<ArrayList<URL>> {
-                override fun onResponse(
-                    call: retrofit2.Call<ArrayList<URL>>,
-                    response: Response<ArrayList<URL>>
-                ) {
-                    if (response.code() == 200) {
-                        if (response.body() != null) {
-                            Log.e("urls", response.body()!![position].toString())
-                        }
-                    }
-                }
-
-                override fun onFailure(call: retrofit2.Call<ArrayList<URL>>, t: Throwable) {
-
-                }
-            })
+            reviewWords(holder)
         }
 
+    }
 
+    private fun reviewWords(holder: ViewHolder) {
+        getDestinations(holder)
+    }
 
+    private fun getDestinations(holder: ViewHolder) {
+        val urlsApi = RetrofitHelper.getInstance().create(IService::class.java)
+        val call: Call<ArrayList<URL>> = urlsApi.getURLs()
+        call.enqueue(object : Callback<ArrayList<URL>> {
+            override fun onResponse(
+                call: Call<ArrayList<URL>>,
+                response: Response<ArrayList<URL>>
+            ) {
+                if (response.code() == 200) {
+                    if (response.body() != null && response.isSuccessful) {
+                        Log.e("urls", response.body()!![holder.bindingAdapterPosition].toString())
+                        getWords(response, holder)
+                    }
+                }
+            }
 
+            override fun onFailure(call: Call<ArrayList<URL>>, t: Throwable) {
 
+            }
+        })
+    }
+
+    private fun getWords(
+        response: Response<ArrayList<URL>>,
+        holder: ViewHolder
+    ) {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://api-generator.retool.com/")
+            .addConverterFactory(GsonConverterFactory.create()).build().create(IService::class.java)
+
+        val wordCall: Call<ArrayList<Word>> = retrofit.getWords(response.body()!![holder.bindingAdapterPosition].wordsURL)
+        wordCall.enqueue(object : Callback<ArrayList<Word>> {
+            override fun onResponse(
+                call: Call<ArrayList<Word>>,
+                response: Response<ArrayList<Word>>
+            ) {
+                Log.e("urls", response.body().toString())
+            }
+
+            override fun onFailure(call: Call<ArrayList<Word>>, t: Throwable) {
+                Log.e("urls", t.toString())
+            }
+
+        })
     }
 
 

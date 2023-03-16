@@ -1,7 +1,6 @@
 package com.rmblack.vocabularyof12sgrade.activities
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -9,11 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rmblack.vocabularyof12sgrade.R
 import com.rmblack.vocabularyof12sgrade.adapter.LessonsRecAdapter
 import com.rmblack.vocabularyof12sgrade.databinding.ActivityMainBinding
-import com.rmblack.vocabularyof12sgrade.logic.Lesson
-import com.rmblack.vocabularyof12sgrade.server.RetrofitHelper
-import com.rmblack.vocabularyof12sgrade.server.WordsApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import com.rmblack.vocabularyof12sgrade.models.Lesson
 
 class MainActivity : AppCompatActivity() {
 

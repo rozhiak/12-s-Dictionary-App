@@ -1,4 +1,4 @@
-package com.rmblack.vocabularyof12sgrade.server.models
+package com.rmblack.vocabularyof12sgrade.models
 
 data class URL(
     val id : String,

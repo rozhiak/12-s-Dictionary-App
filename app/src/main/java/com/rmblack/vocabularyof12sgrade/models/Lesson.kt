@@ -1,6 +1,4 @@
-package com.rmblack.vocabularyof12sgrade.logic
-
-import android.graphics.drawable.Drawable
+package com.rmblack.vocabularyof12sgrade.models
 
 data class Lesson(val number: String, val title: String, val lessonImage: Int, var visibility: Boolean = false) {
 
