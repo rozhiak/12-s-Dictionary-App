@@ -1,5 +1,6 @@
 package com.rmblack.vocabularyof12sgrade.adapter
 
+import android.content.Context
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,19 +13,21 @@ import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.rmblack.vocabularyof12sgrade.R
+import com.rmblack.vocabularyof12sgrade.Utilities.DataBaseInfo
 import com.rmblack.vocabularyof12sgrade.models.Lesson
+import com.rmblack.vocabularyof12sgrade.models.URL
 import com.rmblack.vocabularyof12sgrade.models.Word
 import com.rmblack.vocabularyof12sgrade.server.IService
 import com.rmblack.vocabularyof12sgrade.server.RetrofitHelper
-import com.rmblack.vocabularyof12sgrade.models.URL
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-
-class LessonsRecAdapter(private val lessons: List<Lesson>) : RecyclerView.Adapter<LessonsRecAdapter.ViewHolder>() {
+class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: Context) : RecyclerView.Adapter<LessonsRecAdapter.ViewHolder>() {
 
     lateinit var recyclerView : RecyclerView
 
@@ -92,13 +95,9 @@ class LessonsRecAdapter(private val lessons: List<Lesson>) : RecyclerView.Adapte
         holder.lessonNumberTV.text = lesson.number
         holder.lessonTitleTV.text = lesson.title
 
-
-
-
         holder.startReviewCard.setOnClickListener {
             reviewWords(holder)
         }
-
     }
 
     private fun reviewWords(holder: ViewHolder) {
@@ -134,21 +133,34 @@ class LessonsRecAdapter(private val lessons: List<Lesson>) : RecyclerView.Adapte
         val retrofit = Retrofit.Builder()
             .baseUrl("https://api-generator.retool.com/")
             .addConverterFactory(GsonConverterFactory.create()).build().create(IService::class.java)
-
         val wordCall: Call<ArrayList<Word>> = retrofit.getWords(response.body()!![holder.bindingAdapterPosition].wordsURL)
         wordCall.enqueue(object : Callback<ArrayList<Word>> {
             override fun onResponse(
                 call: Call<ArrayList<Word>>,
                 response: Response<ArrayList<Word>>
             ) {
-                Log.e("urls", response.body().toString())
+                saveWordsToDB(response, holder)
             }
 
             override fun onFailure(call: Call<ArrayList<Word>>, t: Throwable) {
                 Log.e("urls", t.toString())
             }
-
         })
+    }
+
+    private fun saveWordsToDB(
+        response: Response<ArrayList<Word>>,
+        holder: ViewHolder
+    ) {
+        val sp = context.getSharedPreferences(DataBaseInfo.SP_NAME, Context.MODE_PRIVATE)
+        val editor = sp.edit()
+        val serializesArray = Json.encodeToString(response.body())
+        editor.putString(lessons[holder.bindingAdapterPosition].title, serializesArray)
+        editor.apply()
+
+        //retrieve data
+//        val retrievedArr = Json.decodeFromString<ArrayList<Word>>(sp.getString(lessons[holder.bindingAdapterPosition].title, "").toString())
+//        Log.e("retWords", retrievedArr.toString())
     }
 
 

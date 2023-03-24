@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         val rvLessons = findViewById<View>(R.id.rvLessons) as RecyclerView
-        val adapter = LessonsRecAdapter(lessons)
+        val adapter = LessonsRecAdapter(lessons, this)
         rvLessons.adapter = adapter
         rvLessons.layoutManager = LinearLayoutManager(this)
     }
