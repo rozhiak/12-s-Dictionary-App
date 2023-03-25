@@ -3,6 +3,7 @@ package com.rmblack.vocabularyof12sgrade.activities
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rmblack.vocabularyof12sgrade.R
@@ -18,10 +19,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        //This line should be changed
-        window.navigationBarColor = resources.getColor(R.color.teeth_white)
-
+        window.navigationBarColor = ContextCompat.getColor(this, R.color.teeth_white)
         initializeLessons()
     }
 

@@ -1,6 +1,7 @@
 package com.rmblack.vocabularyof12sgrade.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,6 +15,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.rmblack.vocabularyof12sgrade.R
 import com.rmblack.vocabularyof12sgrade.Utilities.DataBaseInfo
+import com.rmblack.vocabularyof12sgrade.activities.ReviewWords
 import com.rmblack.vocabularyof12sgrade.models.Lesson
 import com.rmblack.vocabularyof12sgrade.models.URL
 import com.rmblack.vocabularyof12sgrade.models.Word
@@ -29,7 +31,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: Context) : RecyclerView.Adapter<LessonsRecAdapter.ViewHolder>() {
 
-    lateinit var recyclerView : RecyclerView
+    private lateinit var recyclerView : RecyclerView
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
@@ -58,12 +60,49 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.oneMistakeSwitch.isChecked = false
-        holder.twoMistakeSwitch.isChecked = false
-        holder.threeMistakeSwitch.isChecked = false
-        holder.moreThanThreeMistakesSwitch.isChecked = false
+        setSwitchesToDefault(holder)
+        setEachLesson(position, holder)
+        holder.startReviewCard.setOnClickListener {
+            reviewWords(holder)
+        }
+    }
 
-        val lesson : Lesson = lessons[position]
+    private fun setEachLesson(
+        position: Int,
+        holder: ViewHolder
+    ) {
+        val lesson: Lesson = lessonClick(position, holder)
+        lessonVisibility(lesson, holder)
+        lessonInfo(holder, lesson)
+    }
+
+    private fun lessonInfo(
+        holder: ViewHolder,
+        lesson: Lesson
+    ) {
+        holder.lessonImage.setBackgroundResource(lesson.lessonImage)
+        holder.lessonNumberTV.text = lesson.number
+        holder.lessonTitleTV.text = lesson.title
+    }
+
+    private fun lessonVisibility(
+        lesson: Lesson,
+        holder: ViewHolder
+    ) {
+        if (lesson.visibility) {
+            holder.expandedLayout.visibility = View.VISIBLE
+            holder.lessonCard.setCardBackgroundColor(Color.parseColor("#ECEFF7"))
+        } else {
+            holder.expandedLayout.visibility = View.GONE
+            holder.lessonCard.setCardBackgroundColor(Color.parseColor("#F8F9F9"))
+        }
+    }
+
+    private fun lessonClick(
+        position: Int,
+        holder: ViewHolder
+    ): Lesson {
+        val lesson: Lesson = lessons[position]
         holder.lessonConstraint.setOnClickListener {
             if (!lesson.visibility) {
                 for (i in lessons.indices) {
@@ -82,22 +121,14 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
                 recyclerView.smoothScrollToPosition(position)
             }
         }
+        return lesson
+    }
 
-        if (lesson.visibility) {
-            holder.expandedLayout.visibility = View.VISIBLE
-            holder.lessonCard.setCardBackgroundColor(Color.parseColor("#ECEFF7"))
-        } else {
-            holder.expandedLayout.visibility = View.GONE
-            holder.lessonCard.setCardBackgroundColor(Color.parseColor("#F8F9F9"))
-        }
-
-        holder.lessonImage.setBackgroundResource(lesson.lessonImage)
-        holder.lessonNumberTV.text = lesson.number
-        holder.lessonTitleTV.text = lesson.title
-
-        holder.startReviewCard.setOnClickListener {
-            reviewWords(holder)
-        }
+    private fun setSwitchesToDefault(holder: ViewHolder) {
+        holder.oneMistakeSwitch.isChecked = false
+        holder.twoMistakeSwitch.isChecked = false
+        holder.threeMistakeSwitch.isChecked = false
+        holder.moreThanThreeMistakesSwitch.isChecked = false
     }
 
     private fun reviewWords(holder: ViewHolder) {
@@ -140,12 +171,20 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
                 response: Response<ArrayList<Word>>
             ) {
                 saveWordsToDB(response, holder)
+                startReviewActivity(holder)
             }
 
             override fun onFailure(call: Call<ArrayList<Word>>, t: Throwable) {
                 Log.e("urls", t.toString())
             }
         })
+    }
+
+    private fun startReviewActivity(holder: ViewHolder) {
+        val serializesLesson = Json.encodeToString(lessons[holder.bindingAdapterPosition])
+        val intent = Intent(context, ReviewWords::class.java)
+        intent.putExtra(DataBaseInfo.BUNDLE_LESSON, serializesLesson)
+        context.startActivity(intent)
     }
 
     private fun saveWordsToDB(
@@ -158,11 +197,8 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
         editor.putString(lessons[holder.bindingAdapterPosition].title, serializesArray)
         editor.apply()
 
-        //retrieve data
-//        val retrievedArr = Json.decodeFromString<ArrayList<Word>>(sp.getString(lessons[holder.bindingAdapterPosition].title, "").toString())
-//        Log.e("retWords", retrievedArr.toString())
-    }
 
+    }
 
     override fun getItemCount(): Int {
         return lessons.size
