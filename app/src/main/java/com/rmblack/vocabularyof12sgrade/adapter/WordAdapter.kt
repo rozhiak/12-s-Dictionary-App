@@ -16,18 +16,79 @@ class WordAdapter(private val wordList : ArrayList<Word>)
     : RecyclerView.Adapter<WordAdapter.WordVH>() {
 
     private lateinit var holder: WordVH
+    private val wordsState: Array<Boolean?> = arrayOfNulls(wordList.size)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordVH {
-        val view = LayoutInflater.from(parent.context).inflate(com.rmblack.vocabularyof12sgrade.R.layout.word_row, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.word_row, parent, false)
         return WordVH(view)
     }
 
     override fun onBindViewHolder(holder: WordVH, position: Int) {
         this.holder = holder
-        Init(holder, position)
-
+        init(holder, position)
         val word : Word = wordList[position]
+        showAnswer(holder, word)
+        configCheckAndQButton(holder, position)
+        setIcons(position, holder)
+    }
 
+    private fun setIcons(
+        position: Int,
+        holder: WordVH
+    ) {
+        if (wordsState[position] == null) {
+            holder.checkImg.setImageResource(R.drawable.check_icon)
+            holder.questionImg.setImageResource(R.drawable.question_icon)
+        } else if (wordsState[position] == true) {
+            holder.checkImg.setImageResource(R.drawable.green_check_logo)
+            holder.questionImg.setImageResource(R.drawable.question_icon)
+
+        } else if (wordsState[position] != true) {
+            holder.checkImg.setImageResource(R.drawable.check_icon)
+            holder.questionImg.setImageResource(R.drawable.orange_question_mark)
+        }
+    }
+
+    fun setIconsWhenSwiping(prePos: Int, nextPos: Int) {
+        notifyItemChanged(prePos)
+        notifyItemChanged(nextPos)
+    }
+
+    private fun configCheckAndQButton(holder: WordVH, position: Int) {
+        holder.checkCard.setOnClickListener {
+            //When check btn is clicked
+            if (wordsState[position] == null) {
+                holder.checkImg.setImageResource(R.drawable.green_check_logo)
+                wordsState[position] = true
+            } else if (wordsState[position] == true) {
+                wordsState[position] = null
+                holder.checkImg.setImageResource(R.drawable.check_icon)
+            } else if(wordsState[position] != true) {
+                wordsState[position] = !wordsState[position]!!
+                holder.checkImg.setImageResource(R.drawable.green_check_logo)
+                holder.questionImg.setImageResource(R.drawable.question_icon)
+            }
+        }
+        holder.questionCard.setOnClickListener {
+            //When question btn is clicked
+            if (wordsState[position] == null) {
+                holder.questionImg.setImageResource(R.drawable.orange_question_mark)
+                wordsState[position] = false
+            } else if (wordsState[position] == true) {
+                wordsState[position] = !wordsState[position]!!
+                holder.questionImg.setImageResource(R.drawable.orange_question_mark)
+                holder.checkImg.setImageResource(R.drawable.check_icon)
+            } else if(wordsState[position] != true) {
+                wordsState[position] = null
+                holder.questionImg.setImageResource(R.drawable.question_icon)
+            }
+        }
+    }
+
+    private fun showAnswer(
+        holder: WordVH,
+        word: Word
+    ) {
         holder.showAnswerCard.setOnClickListener {
             word.answerVisibility = !word.answerVisibility
             if (word.answerVisibility) {
@@ -44,7 +105,7 @@ class WordAdapter(private val wordList : ArrayList<Word>)
         }
     }
 
-    private fun Init(
+    private fun init(
         holder: WordVH,
         position: Int
     ) {
@@ -64,8 +125,8 @@ class WordAdapter(private val wordList : ArrayList<Word>)
     }
 
     fun resizeWordCard(holder: WordVH, size: Int) {
-        val params = holder.wordCard.layoutParams as ViewGroup.MarginLayoutParams
-        val bottomMarginStart = params.bottomMargin // your start value
+        val lParams = holder.wordCard.layoutParams as ViewGroup.MarginLayoutParams
+        val bottomMarginStart = lParams.bottomMargin // your start value
         val a = object : Animation() {
             override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
                 val params = holder.wordCard.layoutParams as ViewGroup.MarginLayoutParams

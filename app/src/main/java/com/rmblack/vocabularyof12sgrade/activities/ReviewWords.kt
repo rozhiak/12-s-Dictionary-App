@@ -84,6 +84,7 @@ class ReviewWords : AppCompatActivity() {
                 positionOffsetPixels: Int
             ) {
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+                wordsAdapter.setIconsWhenSwiping(position-1, position+1)
                 if (words[position].answerVisibility) {
                     hideAnswer(position, words)
                 }
@@ -104,6 +105,11 @@ class ReviewWords : AppCompatActivity() {
         wordsAdapter.resizeWordCard(viewHolder, 80)
         wordsAdapter.changeEyeIcon(false, viewHolder)
         words[position].answerVisibility = !words[position].answerVisibility
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        //Save changes in data base
     }
 
 }

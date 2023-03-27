@@ -115,7 +115,6 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
                 }
             }
             lesson.visibility = !lesson.visibility
-
             notifyItemChanged(position)
             recyclerView.post {
                 recyclerView.smoothScrollToPosition(position)
