@@ -12,11 +12,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rmblack.vocabularyof12sgrade.R
 import com.rmblack.vocabularyof12sgrade.models.Word
 
-class WordAdapter(private val wordList : ArrayList<Word>)
+class WordAdapter(private val wordList : ArrayList<Word>, private val wordsState: Array<Boolean?>)
     : RecyclerView.Adapter<WordAdapter.WordVH>() {
 
     private lateinit var holder: WordVH
-    private val wordsState: Array<Boolean?> = arrayOfNulls(wordList.size)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordVH {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.word_row, parent, false)
@@ -55,20 +54,14 @@ class WordAdapter(private val wordList : ArrayList<Word>)
     }
 
     private fun configCheckAndQButton(holder: WordVH, position: Int) {
-        holder.checkCard.setOnClickListener {
-            //When check btn is clicked
-            if (wordsState[position] == null) {
-                holder.checkImg.setImageResource(R.drawable.green_check_logo)
-                wordsState[position] = true
-            } else if (wordsState[position] == true) {
-                wordsState[position] = null
-                holder.checkImg.setImageResource(R.drawable.check_icon)
-            } else if(wordsState[position] != true) {
-                wordsState[position] = !wordsState[position]!!
-                holder.checkImg.setImageResource(R.drawable.green_check_logo)
-                holder.questionImg.setImageResource(R.drawable.question_icon)
-            }
-        }
+        checkCardClick(holder, position)
+        questionCardClick(holder, position)
+    }
+
+    private fun questionCardClick(
+        holder: WordVH,
+        position: Int
+    ) {
         holder.questionCard.setOnClickListener {
             //When question btn is clicked
             if (wordsState[position] == null) {
@@ -78,8 +71,28 @@ class WordAdapter(private val wordList : ArrayList<Word>)
                 wordsState[position] = !wordsState[position]!!
                 holder.questionImg.setImageResource(R.drawable.orange_question_mark)
                 holder.checkImg.setImageResource(R.drawable.check_icon)
-            } else if(wordsState[position] != true) {
+            } else if (wordsState[position] != true) {
                 wordsState[position] = null
+                holder.questionImg.setImageResource(R.drawable.question_icon)
+            }
+        }
+    }
+
+    private fun checkCardClick(
+        holder: WordVH,
+        position: Int
+    ) {
+        holder.checkCard.setOnClickListener {
+            //When check btn is clicked
+            if (wordsState[position] == null) {
+                holder.checkImg.setImageResource(R.drawable.green_check_logo)
+                wordsState[position] = true
+            } else if (wordsState[position] == true) {
+                wordsState[position] = null
+                holder.checkImg.setImageResource(R.drawable.check_icon)
+            } else if (wordsState[position] != true) {
+                wordsState[position] = !wordsState[position]!!
+                holder.checkImg.setImageResource(R.drawable.green_check_logo)
                 holder.questionImg.setImageResource(R.drawable.question_icon)
             }
         }

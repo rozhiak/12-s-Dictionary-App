@@ -21,6 +21,7 @@ import com.rmblack.vocabularyof12sgrade.models.URL
 import com.rmblack.vocabularyof12sgrade.models.Word
 import com.rmblack.vocabularyof12sgrade.server.IService
 import com.rmblack.vocabularyof12sgrade.server.RetrofitHelper
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import retrofit2.Call
@@ -32,6 +33,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: Context) : RecyclerView.Adapter<LessonsRecAdapter.ViewHolder>() {
 
     private lateinit var recyclerView : RecyclerView
+    private val sp = context.getSharedPreferences(DataBaseInfo.SP_NAME, Context.MODE_PRIVATE)
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
@@ -50,6 +52,8 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
         val threeMistakeSwitch : SwitchCompat = itemView.findViewById(R.id.three_mistakes_switch)
         val moreThanThreeMistakesSwitch : SwitchCompat = itemView.findViewById(R.id.more_than_three_mistakes_switch)
         val startReviewCard : CardView = itemView.findViewById(R.id.startReviewCard)
+        val secondStartCard : CardView = itemView.findViewById(R.id.secondStartCardView)
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -63,7 +67,15 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
         setSwitchesToDefault(holder)
         setEachLesson(position, holder)
         holder.startReviewCard.setOnClickListener {
-            reviewWords(holder)
+            reviewWords(holder.bindingAdapterPosition)
+        }
+        holder.secondStartCard.setOnClickListener {
+            var oneMis = holder.oneMistakeSwitch.isChecked
+            var twoMis = holder.twoMistakeSwitch.isChecked
+            var threeMis = holder.threeMistakeSwitch.isChecked
+            var threeAndMoreMis = holder.moreThanThreeMistakesSwitch.isChecked
+
+
         }
     }
 
@@ -130,11 +142,27 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
         holder.moreThanThreeMistakesSwitch.isChecked = false
     }
 
-    private fun reviewWords(holder: ViewHolder) {
-        getDestinations(holder)
+    private fun reviewWords(tarPos: Int) {
+        try {
+            getWordsFromDB(tarPos)
+        } catch (e : Exception) {
+            getDestinations(tarPos)
+        }
     }
 
-    private fun getDestinations(holder: ViewHolder) {
+    private fun getWordsFromDB(tarPos: Int) {
+        val wordList: java.util.ArrayList<Word> =
+            Json.decodeFromString(
+                sp.getString(lessons[tarPos].title, "").toString()
+            )
+        if (lessons[tarPos].words == null) {
+            lessons[tarPos].words = wordList
+        }
+        lessons[tarPos].wordsToReview = wordList
+        startReviewActivity(tarPos)
+    }
+
+    private fun getDestinations(tarPos: Int) {
         val urlsApi = RetrofitHelper.getInstance().create(IService::class.java)
         val call: Call<ArrayList<URL>> = urlsApi.getURLs()
         call.enqueue(object : Callback<ArrayList<URL>> {
@@ -144,8 +172,7 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
             ) {
                 if (response.code() == 200) {
                     if (response.body() != null && response.isSuccessful) {
-                        Log.e("urls", response.body()!![holder.bindingAdapterPosition].toString())
-                        getWords(response, holder)
+                        getWords(response, tarPos)
                     }
                 }
             }
@@ -158,19 +185,20 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
 
     private fun getWords(
         response: Response<ArrayList<URL>>,
-        holder: ViewHolder
+        tarPos: Int
     ) {
         val retrofit = Retrofit.Builder()
             .baseUrl("https://api-generator.retool.com/")
             .addConverterFactory(GsonConverterFactory.create()).build().create(IService::class.java)
-        val wordCall: Call<ArrayList<Word>> = retrofit.getWords(response.body()!![holder.bindingAdapterPosition].wordsURL)
+        val wordCall: Call<ArrayList<Word>> = retrofit.getWords(response.body()!![tarPos].wordsURL)
         wordCall.enqueue(object : Callback<ArrayList<Word>> {
             override fun onResponse(
                 call: Call<ArrayList<Word>>,
                 response: Response<ArrayList<Word>>
             ) {
-                saveWordsToDB(response, holder)
-                startReviewActivity(holder)
+                saveWordsToDB(response, tarPos)
+                saveWordsToLesson(tarPos, response)
+                startReviewActivity(tarPos)
             }
 
             override fun onFailure(call: Call<ArrayList<Word>>, t: Throwable) {
@@ -179,8 +207,16 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
         })
     }
 
-    private fun startReviewActivity(holder: ViewHolder) {
-        val serializesLesson = Json.encodeToString(lessons[holder.bindingAdapterPosition])
+    private fun saveWordsToLesson(
+        tarPos: Int,
+        response: Response<ArrayList<Word>>
+    ) {
+        lessons[tarPos].words = response.body()
+        lessons[tarPos].wordsToReview = response.body()
+    }
+
+    private fun startReviewActivity(tarPos: Int) {
+        val serializesLesson = Json.encodeToString(lessons[tarPos])
         val intent = Intent(context, ReviewWords::class.java)
         intent.putExtra(DataBaseInfo.BUNDLE_LESSON, serializesLesson)
         context.startActivity(intent)
@@ -188,15 +224,12 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
 
     private fun saveWordsToDB(
         response: Response<ArrayList<Word>>,
-        holder: ViewHolder
+        tarPos: Int
     ) {
-        val sp = context.getSharedPreferences(DataBaseInfo.SP_NAME, Context.MODE_PRIVATE)
         val editor = sp.edit()
         val serializesArray = Json.encodeToString(response.body())
-        editor.putString(lessons[holder.bindingAdapterPosition].title, serializesArray)
+        editor.putString(lessons[tarPos].title, serializesArray)
         editor.apply()
-
-
     }
 
     override fun getItemCount(): Int {

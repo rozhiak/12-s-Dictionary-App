@@ -1,6 +1,5 @@
 package com.rmblack.vocabularyof12sgrade.activities
 
-import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.content.ContextCompat
@@ -26,6 +25,8 @@ class ReviewWords : AppCompatActivity() {
     private lateinit var wordList: ArrayList<Word>
     private lateinit var wordsAdapter: WordAdapter
     private lateinit var tarLesson : Lesson
+    private lateinit var wordsState: Array<Boolean?>
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +37,17 @@ class ReviewWords : AppCompatActivity() {
         initWords()
         setUpTransformer()
         initLesson()
+        configBTNs()
+    }
+
+    private fun configBTNs() {
+        configEndBtn()
+    }
+
+    private fun configEndBtn() {
+        binding.endBtn.setOnClickListener {
+            //save and and go to overall review of words
+        }
     }
 
     private fun initLesson() {
@@ -53,16 +65,15 @@ class ReviewWords : AppCompatActivity() {
     }
 
     private fun initWords() {
-        wordList = ArrayList()
-        val sp = getSharedPreferences(DataBaseInfo.SP_NAME, Context.MODE_PRIVATE)
-        wordList = Json.decodeFromString(sp.getString(tarLesson.title, "").toString())
+        wordList = tarLesson.wordsToReview!!
+        wordsState = arrayOfNulls(wordList.size)
         binding.wordsNum.text = PersianNum.convert(wordList.size.toString())
         initViewPager()
     }
 
     private fun initViewPager() {
         wordsViewPager = findViewById(R.id.wordsViewPager)
-        wordsAdapter = WordAdapter(wordList)
+        wordsAdapter = WordAdapter(wordList, wordsState)
         wordsViewPager.adapter = wordsAdapter
         wordsViewPager.offscreenPageLimit = 3
         wordsViewPager.clipToPadding = false
@@ -84,17 +95,26 @@ class ReviewWords : AppCompatActivity() {
                 positionOffsetPixels: Int
             ) {
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels)
-                wordsAdapter.setIconsWhenSwiping(position-1, position+1)
-                if (words[position].answerVisibility) {
-                    hideAnswer(position, words)
+                binding.wordsViewPager.post {
+                    wordsAdapter.setIconsWhenSwiping(position-1, position+1)
                 }
-                if (position + 1 < wordsAdapter.itemCount) {
-                    if (words[position + 1].answerVisibility) {
-                        hideAnswer(position + 1, words)
-                    }
-                }
+                hidePreviousWordAnswer(words, position)
             }
         })
+    }
+
+    private fun hidePreviousWordAnswer(
+        words: ArrayList<Word>,
+        position: Int
+    ) {
+        if (words[position].answerVisibility) {
+            hideAnswer(position, words)
+        }
+        if (position + 1 < wordsAdapter.itemCount) {
+            if (words[position + 1].answerVisibility) {
+                hideAnswer(position + 1, words)
+            }
+        }
     }
 
     private fun hideAnswer(position : Int, words: ArrayList<Word>) {
@@ -105,11 +125,6 @@ class ReviewWords : AppCompatActivity() {
         wordsAdapter.resizeWordCard(viewHolder, 80)
         wordsAdapter.changeEyeIcon(false, viewHolder)
         words[position].answerVisibility = !words[position].answerVisibility
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        //Save changes in data base
     }
 
 }
