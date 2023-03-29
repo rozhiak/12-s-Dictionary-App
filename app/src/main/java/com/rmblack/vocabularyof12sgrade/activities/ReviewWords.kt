@@ -15,6 +15,7 @@ import com.rmblack.vocabularyof12sgrade.databinding.ActivityReviewWordsBinding
 import com.rmblack.vocabularyof12sgrade.models.Lesson
 import com.rmblack.vocabularyof12sgrade.models.Word
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.math.abs
 
@@ -22,11 +23,8 @@ class ReviewWords : AppCompatActivity() {
 
     private lateinit var binding: ActivityReviewWordsBinding
     private lateinit var wordsViewPager: ViewPager2
-    private lateinit var wordList: ArrayList<Word>
     private lateinit var wordsAdapter: WordAdapter
     private lateinit var tarLesson : Lesson
-    private lateinit var wordsState: Array<Boolean?>
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,21 +34,38 @@ class ReviewWords : AppCompatActivity() {
         getIntentData()
         initWords()
         setUpTransformer()
-        initLesson()
+        initUIElements()
         configBTNs()
     }
-
+    //////
+    fun test() {
+        binding.wordsNum.text = "20"
+    }
+//////
     private fun configBTNs() {
         configEndBtn()
     }
 
     private fun configEndBtn() {
         binding.endBtn.setOnClickListener {
-            //save and and go to overall review of words
+            saveResToDB()
         }
     }
 
-    private fun initLesson() {
+    private fun saveResToDB() {
+        for (word in tarLesson.wordsToReview!!) {
+            if (word.wordState == false) {
+                tarLesson.increaseWordWrongNum(word)
+            }
+        }
+        val sp = this.getSharedPreferences(DataBaseInfo.SP_NAME, MODE_PRIVATE)
+        val editor = sp.edit()
+        val serializesArray = Json.encodeToString(tarLesson.words)
+        editor.putString(tarLesson.title, serializesArray)
+        editor.apply()
+    }
+
+    private fun initUIElements() {
         binding.lessonTitle.text = tarLesson.title
     }
 
@@ -65,21 +80,19 @@ class ReviewWords : AppCompatActivity() {
     }
 
     private fun initWords() {
-        wordList = tarLesson.wordsToReview!!
-        wordsState = arrayOfNulls(wordList.size)
-        binding.wordsNum.text = PersianNum.convert(wordList.size.toString())
+        binding.wordsNum.text = PersianNum.convert(tarLesson.wordsToReview!!.size.toString())
         initViewPager()
     }
 
     private fun initViewPager() {
         wordsViewPager = findViewById(R.id.wordsViewPager)
-        wordsAdapter = WordAdapter(wordList, wordsState)
+        wordsAdapter = WordAdapter(tarLesson.wordsToReview!!)
         wordsViewPager.adapter = wordsAdapter
         wordsViewPager.offscreenPageLimit = 3
         wordsViewPager.clipToPadding = false
         wordsViewPager.clipChildren = false
         wordsViewPager.getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
-        handleWordCardWhenSwiping(wordList)
+        handleWordCardWhenSwiping(tarLesson.wordsToReview!!)
     }
 
     private fun getIntentData() {
@@ -127,4 +140,8 @@ class ReviewWords : AppCompatActivity() {
         words[position].answerVisibility = !words[position].answerVisibility
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        saveResToDB()
+    }
 }

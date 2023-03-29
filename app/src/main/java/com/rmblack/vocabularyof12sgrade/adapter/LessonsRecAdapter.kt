@@ -143,9 +143,9 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
     }
 
     private fun reviewWords(tarPos: Int) {
-        try {
+        if (sp.contains(lessons[tarPos].title)) {
             getWordsFromDB(tarPos)
-        } catch (e : Exception) {
+        } else {
             getDestinations(tarPos)
         }
     }

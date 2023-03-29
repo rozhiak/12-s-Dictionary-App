@@ -10,9 +10,10 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.rmblack.vocabularyof12sgrade.R
+import com.rmblack.vocabularyof12sgrade.activities.ReviewWords
 import com.rmblack.vocabularyof12sgrade.models.Word
 
-class WordAdapter(private val wordList : ArrayList<Word>, private val wordsState: Array<Boolean?>)
+class WordAdapter(private val wordList : ArrayList<Word>)
     : RecyclerView.Adapter<WordAdapter.WordVH>() {
 
     private lateinit var holder: WordVH
@@ -35,14 +36,14 @@ class WordAdapter(private val wordList : ArrayList<Word>, private val wordsState
         position: Int,
         holder: WordVH
     ) {
-        if (wordsState[position] == null) {
+        if (wordList[position].wordState == null) {
             holder.checkImg.setImageResource(R.drawable.check_icon)
             holder.questionImg.setImageResource(R.drawable.question_icon)
-        } else if (wordsState[position] == true) {
+        } else if (wordList[position].wordState == true) {
             holder.checkImg.setImageResource(R.drawable.green_check_logo)
             holder.questionImg.setImageResource(R.drawable.question_icon)
 
-        } else if (wordsState[position] != true) {
+        } else if (wordList[position].wordState != true) {
             holder.checkImg.setImageResource(R.drawable.check_icon)
             holder.questionImg.setImageResource(R.drawable.orange_question_mark)
         }
@@ -63,16 +64,15 @@ class WordAdapter(private val wordList : ArrayList<Word>, private val wordsState
         position: Int
     ) {
         holder.questionCard.setOnClickListener {
-            //When question btn is clicked
-            if (wordsState[position] == null) {
+            if (wordList[position].wordState == null) {
                 holder.questionImg.setImageResource(R.drawable.orange_question_mark)
-                wordsState[position] = false
-            } else if (wordsState[position] == true) {
-                wordsState[position] = !wordsState[position]!!
+                wordList[position].wordState = false
+            } else if (wordList[position].wordState == true) {
+                wordList[position].wordState = !wordList[position].wordState!!
                 holder.questionImg.setImageResource(R.drawable.orange_question_mark)
                 holder.checkImg.setImageResource(R.drawable.check_icon)
-            } else if (wordsState[position] != true) {
-                wordsState[position] = null
+            } else if (wordList[position].wordState != true) {
+                wordList[position].wordState = null
                 holder.questionImg.setImageResource(R.drawable.question_icon)
             }
         }
@@ -83,15 +83,14 @@ class WordAdapter(private val wordList : ArrayList<Word>, private val wordsState
         position: Int
     ) {
         holder.checkCard.setOnClickListener {
-            //When check btn is clicked
-            if (wordsState[position] == null) {
+            if (wordList[position].wordState == null) {
                 holder.checkImg.setImageResource(R.drawable.green_check_logo)
-                wordsState[position] = true
-            } else if (wordsState[position] == true) {
-                wordsState[position] = null
+                wordList[position].wordState = true
+            } else if (wordList[position].wordState == true) {
+                wordList[position].wordState = null
                 holder.checkImg.setImageResource(R.drawable.check_icon)
-            } else if (wordsState[position] != true) {
-                wordsState[position] = !wordsState[position]!!
+            } else if (wordList[position].wordState != true) {
+                wordList[position].wordState = !wordList[position].wordState!!
                 holder.checkImg.setImageResource(R.drawable.green_check_logo)
                 holder.questionImg.setImageResource(R.drawable.question_icon)
             }
