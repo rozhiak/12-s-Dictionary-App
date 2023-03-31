@@ -2,14 +2,15 @@ package com.rmblack.vocabularyof12sgrade.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.rmblack.vocabularyof12sgrade.R
-import com.rmblack.vocabularyof12sgrade.Utilities.DataBaseInfo
-import com.rmblack.vocabularyof12sgrade.Utilities.PersianNum
+import com.rmblack.vocabularyof12sgrade.utils.DataBaseInfo
+import com.rmblack.vocabularyof12sgrade.utils.PersianNum
 import com.rmblack.vocabularyof12sgrade.adapter.WordAdapter
 import com.rmblack.vocabularyof12sgrade.databinding.ActivityReviewWordsBinding
 import com.rmblack.vocabularyof12sgrade.models.Lesson
@@ -35,22 +36,18 @@ class ReviewWords : AppCompatActivity() {
         initWords()
         setUpTransformer()
         initUIElements()
-        configBTNs()
-    }
-    //////
-    fun test() {
-        binding.wordsNum.text = "20"
-    }
-//////
-    private fun configBTNs() {
-        configEndBtn()
+//        configBTNs()
     }
 
-    private fun configEndBtn() {
-        binding.endBtn.setOnClickListener {
-            saveResToDB()
-        }
-    }
+//    private fun configBTNs() {
+//        configEndBtn()
+//    }
+//
+//    private fun configEndBtn() {
+//        binding.endBtn.setOnClickListener {
+//            saveResToDB()
+//        }
+//    }
 
     private fun saveResToDB() {
         for (word in tarLesson.wordsToReview!!) {
@@ -63,10 +60,48 @@ class ReviewWords : AppCompatActivity() {
         val serializesArray = Json.encodeToString(tarLesson.words)
         editor.putString(tarLesson.title, serializesArray)
         editor.apply()
+        val words : ArrayList<Word> = Json.decodeFromString(sp.getString(tarLesson.title, "").toString())
+        Log.e("", words.toString())
     }
 
     private fun initUIElements() {
         binding.lessonTitle.text = tarLesson.title
+        binding.numOfMistakes.text = PersianNum.convert("0")
+        binding.numOfStudied.text = PersianNum.convert("0")
+        binding.numOfRemaining.text = PersianNum.convert(wordsAdapter.itemCount.toString())
+    }
+
+    fun changeNumOFStudied(increaseOrDecrease : Boolean) {
+        var curNum = binding.numOfStudied.text.toString().toInt()
+        if (increaseOrDecrease) {
+            curNum++
+            binding.numOfStudied.text = curNum.toString()
+        } else {
+            curNum--
+            binding.numOfStudied.text = curNum.toString()
+        }
+    }
+
+    fun changeNumOFRemaining(increaseOrDecrease : Boolean) {
+        var curNum = binding.numOfRemaining.text.toString().toInt()
+        if (increaseOrDecrease) {
+            curNum++
+            binding.numOfRemaining.text = curNum.toString()
+        } else {
+            curNum--
+            binding.numOfRemaining.text = curNum.toString()
+        }
+    }
+
+    fun changeNumOFMistakes(increaseOrDecrease : Boolean) {
+        var curNum = binding.numOfMistakes.text.toString().toInt()
+        if (increaseOrDecrease) {
+            curNum++
+            binding.numOfMistakes.text = curNum.toString()
+        } else {
+            curNum--
+            binding.numOfMistakes.text = curNum.toString()
+        }
     }
 
     private fun setUpTransformer() {
@@ -86,7 +121,7 @@ class ReviewWords : AppCompatActivity() {
 
     private fun initViewPager() {
         wordsViewPager = findViewById(R.id.wordsViewPager)
-        wordsAdapter = WordAdapter(tarLesson.wordsToReview!!)
+        wordsAdapter = WordAdapter(tarLesson.wordsToReview!!, this)
         wordsViewPager.adapter = wordsAdapter
         wordsViewPager.offscreenPageLimit = 3
         wordsViewPager.clipToPadding = false

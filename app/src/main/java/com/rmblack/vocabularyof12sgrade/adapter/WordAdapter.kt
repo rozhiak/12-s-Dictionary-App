@@ -13,7 +13,7 @@ import com.rmblack.vocabularyof12sgrade.R
 import com.rmblack.vocabularyof12sgrade.activities.ReviewWords
 import com.rmblack.vocabularyof12sgrade.models.Word
 
-class WordAdapter(private val wordList : ArrayList<Word>)
+class WordAdapter(private val wordList : ArrayList<Word>, private val reviewWords: ReviewWords)
     : RecyclerView.Adapter<WordAdapter.WordVH>() {
 
     private lateinit var holder: WordVH
@@ -49,6 +49,7 @@ class WordAdapter(private val wordList : ArrayList<Word>)
         }
     }
 
+    ///
     fun setIconsWhenSwiping(prePos: Int, nextPos: Int) {
         notifyItemChanged(prePos)
         notifyItemChanged(nextPos)

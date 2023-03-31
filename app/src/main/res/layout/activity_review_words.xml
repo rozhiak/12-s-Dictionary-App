@@ -123,10 +123,34 @@
             android:layout_marginEnd="80dp"
             app:layout_constraintTop_toTopOf="@id/gray_circle"
             app:layout_constraintEnd_toEndOf="parent"
-            android:id="@+id/appCompatImageView2"
+            android:id="@+id/green_circle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/green_circle" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:textStyle="bold"
+            android:id="@+id/studied_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="بلد بودم"
+            android:textColor="@color/gray"
+            app:layout_constraintEnd_toEndOf="@+id/green_circle"
+            app:layout_constraintStart_toStartOf="@id/green_circle"
+            app:layout_constraintTop_toBottomOf="@id/green_circle" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:fontFamily="@font/iransans"
+            android:textColor="@color/gray"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/numOfStudied"
+            app:layout_constraintTop_toBottomOf="@id/studied_tv"
+            app:layout_constraintStart_toStartOf="@id/studied_tv"
+            app:layout_constraintEnd_toEndOf="@id/studied_tv"
+            android:layout_marginTop="8dp"/>
+
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/gray_circle"
@@ -138,13 +162,55 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/gray_circle" />
 
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/remaining_tv"
+            android:textColor="@color/gray"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="@id/gray_circle"
+            app:layout_constraintEnd_toEndOf="@id/gray_circle"
+            app:layout_constraintTop_toBottomOf="@id/gray_circle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/iransans"
+            android:text="باقی مانده"
+            android:textStyle="bold"
+            android:textSize="13sp"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:fontFamily="@font/iransans"
+            android:textColor="@color/gray"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/numOfRemaining"
+            app:layout_constraintTop_toBottomOf="@id/remaining_tv"
+            app:layout_constraintStart_toStartOf="@id/remaining_tv"
+            app:layout_constraintEnd_toEndOf="@id/remaining_tv"
+            android:layout_marginTop="8dp"/>
+
+
         <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/orange_circle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/orange_circle"
             app:layout_constraintTop_toTopOf="@id/gray_circle"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="80dp"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:textColor="@color/gray"
+            android:fontFamily="@font/iransans"
+            android:textStyle="bold"
+            android:textSize="13sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="بلد نبودم"
+            android:id="@+id/mistakes_tv"
+            app:layout_constraintTop_toBottomOf="@id/orange_circle"
+            app:layout_constraintEnd_toEndOf="@id/orange_circle"
+            app:layout_constraintStart_toStartOf="@id/orange_circle"
+            android:layout_marginTop="8dp" />
+
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/wordsViewPager"
@@ -155,6 +221,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:fontFamily="@font/iransans"
+            android:textColor="@color/gray"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/numOfMistakes"
+            app:layout_constraintTop_toBottomOf="@id/mistakes_tv"
+            app:layout_constraintStart_toStartOf="@id/mistakes_tv"
+            app:layout_constraintEnd_toEndOf="@id/mistakes_tv"
+            android:layout_marginTop="8dp"/>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

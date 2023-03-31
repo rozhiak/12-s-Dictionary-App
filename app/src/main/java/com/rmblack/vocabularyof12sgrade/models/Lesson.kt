@@ -10,7 +10,7 @@ data class Lesson(val number: String, val title: String, val lessonImage: Int, v
         words?.get(index)?.increaseWrongNum()
     }
 
-    fun indexOf(word: Word): Int {
+    private fun indexOf(word: Word): Int {
         for (w in words!!) {
             if(w.isEqual(word)) {
                 return words!!.indexOf(w)

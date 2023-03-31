@@ -1,4 +1,4 @@
-package com.rmblack.vocabularyof12sgrade.Utilities
+package com.rmblack.vocabularyof12sgrade.utils
 
 object DataBaseInfo {
     const val SP_NAME = "words preferences"

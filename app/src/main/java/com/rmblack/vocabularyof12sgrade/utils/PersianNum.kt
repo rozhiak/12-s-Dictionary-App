@@ -1,8 +1,8 @@
-package com.rmblack.vocabularyof12sgrade.Utilities
+package com.rmblack.vocabularyof12sgrade.utils
 
 object PersianNum {
-    fun convert(faNumbers: String): String? {
-        var faNumbers = faNumbers
+    fun convert(numToConvert: String): String {
+        var faNumbers = numToConvert
         val mChars = arrayOf(
             arrayOf("0", "۰"),
             arrayOf("1", "۱"),

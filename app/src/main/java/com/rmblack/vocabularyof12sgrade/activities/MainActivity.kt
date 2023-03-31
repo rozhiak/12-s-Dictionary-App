@@ -14,6 +14,7 @@ import com.rmblack.vocabularyof12sgrade.models.Lesson
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var lessons: ArrayList<Lesson>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         val lessonSeventeen = Lesson("درس هفدهم", "خنده تو", R.drawable.seventeen)
         val niyayesh = Lesson("نیایش ", "لطف تو", R.drawable.niyayesh)
 
-        val lessons = listOf(
+        lessons = arrayListOf(
             setayesh,
             lessonOne,
             lessonTwo,
@@ -63,10 +64,19 @@ class MainActivity : AppCompatActivity() {
             niyayesh
         )
 
+        configLessonsRec(lessons)
+    }
+
+    private fun configLessonsRec(lessons: List<Lesson>) {
         val rvLessons = findViewById<View>(R.id.rvLessons) as RecyclerView
         val adapter = LessonsRecAdapter(lessons, this)
         rvLessons.adapter = adapter
         rvLessons.layoutManager = LinearLayoutManager(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        configLessonsRec(lessons)
     }
 
 }

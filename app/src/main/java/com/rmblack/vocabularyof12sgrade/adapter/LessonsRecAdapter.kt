@@ -14,13 +14,13 @@ import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.rmblack.vocabularyof12sgrade.R
-import com.rmblack.vocabularyof12sgrade.Utilities.DataBaseInfo
 import com.rmblack.vocabularyof12sgrade.activities.ReviewWords
 import com.rmblack.vocabularyof12sgrade.models.Lesson
 import com.rmblack.vocabularyof12sgrade.models.URL
 import com.rmblack.vocabularyof12sgrade.models.Word
 import com.rmblack.vocabularyof12sgrade.server.IService
 import com.rmblack.vocabularyof12sgrade.server.RetrofitHelper
+import com.rmblack.vocabularyof12sgrade.utils.DataBaseInfo
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -70,12 +70,59 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
             reviewWords(holder.bindingAdapterPosition)
         }
         holder.secondStartCard.setOnClickListener {
-            var oneMis = holder.oneMistakeSwitch.isChecked
-            var twoMis = holder.twoMistakeSwitch.isChecked
-            var threeMis = holder.threeMistakeSwitch.isChecked
-            var threeAndMoreMis = holder.moreThanThreeMistakesSwitch.isChecked
+            reviewRepeatedMistakeWords(holder)
+        }
+    }
 
+    private fun reviewRepeatedMistakeWords(holder: ViewHolder) {
+        val oneMis = holder.oneMistakeSwitch.isChecked
+        val twoMis = holder.twoMistakeSwitch.isChecked
+        val threeMis = holder.threeMistakeSwitch.isChecked
+        val threeAndMoreMis = holder.moreThanThreeMistakesSwitch.isChecked
 
+        if (!oneMis && !twoMis && !threeMis && !threeAndMoreMis) {
+            //Say to user that he/she should select number of mistakes.
+        } else {
+            val tarPos = holder.bindingAdapterPosition
+            if (sp.contains(lessons[tarPos].title)) {
+                val words = getWordsFromDB(tarPos)
+                val wordsToReview : ArrayList<Word> = ArrayList()
+                lessons[tarPos].words = words
+                collectWords(words, oneMis, wordsToReview, twoMis, threeMis, threeAndMoreMis)
+
+                if (wordsToReview.size == 0) {
+                    //Say to user the there is no word with repeated mistakes
+                } else {
+                    lessons[tarPos].wordsToReview = wordsToReview
+                    startReviewActivity(tarPos)
+                }
+            } else {
+                //Say to user that he/she should review all words at least 1 time then review repeated mistake words.
+            }
+        }
+    }
+
+    private fun collectWords(
+        words: java.util.ArrayList<Word>,
+        oneMis: Boolean,
+        wordsToReview: ArrayList<Word>,
+        twoMis: Boolean,
+        threeMis: Boolean,
+        threeAndMoreMis: Boolean
+    ) {
+        for (w in words) {
+            if (oneMis && w.wrongNum == 1) {
+                wordsToReview.add(w)
+            }
+            if (twoMis && w.wrongNum == 2) {
+                wordsToReview.add(w)
+            }
+            if (threeMis && w.wrongNum == 3) {
+                wordsToReview.add(w)
+            }
+            if (threeAndMoreMis && w.wrongNum > 3) {
+                wordsToReview.add(w)
+            }
         }
     }
 
@@ -144,22 +191,28 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
 
     private fun reviewWords(tarPos: Int) {
         if (sp.contains(lessons[tarPos].title)) {
-            getWordsFromDB(tarPos)
+            getAndFetchDataToLesson(tarPos)
         } else {
             getDestinations(tarPos)
         }
     }
 
-    private fun getWordsFromDB(tarPos: Int) {
+    private fun getAndFetchDataToLesson(tarPos: Int) {
         val wordList: java.util.ArrayList<Word> =
-            Json.decodeFromString(
-                sp.getString(lessons[tarPos].title, "").toString()
-            )
+            getWordsFromDB(tarPos)
+        Log.e("", wordList.toString())
+
         if (lessons[tarPos].words == null) {
             lessons[tarPos].words = wordList
         }
         lessons[tarPos].wordsToReview = wordList
         startReviewActivity(tarPos)
+    }
+
+    private fun getWordsFromDB(tarPos: Int): java.util.ArrayList<Word> {
+        return Json.decodeFromString(
+            sp.getString(lessons[tarPos].title, "").toString()
+        )
     }
 
     private fun getDestinations(tarPos: Int) {
