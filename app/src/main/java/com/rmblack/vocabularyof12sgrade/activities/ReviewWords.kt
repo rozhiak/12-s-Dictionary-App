@@ -71,36 +71,36 @@ class ReviewWords : AppCompatActivity() {
         binding.numOfRemaining.text = PersianNum.convert(wordsAdapter.itemCount.toString())
     }
 
-    fun changeNumOFStudied(increaseOrDecrease : Boolean) {
+    fun changeNumOfStudied(increaseOrDecrease : Boolean) {
         var curNum = binding.numOfStudied.text.toString().toInt()
         if (increaseOrDecrease) {
             curNum++
-            binding.numOfStudied.text = curNum.toString()
+            binding.numOfStudied.text = PersianNum.convert(curNum.toString())
         } else {
             curNum--
-            binding.numOfStudied.text = curNum.toString()
+            binding.numOfStudied.text = PersianNum.convert(curNum.toString())
         }
     }
 
-    fun changeNumOFRemaining(increaseOrDecrease : Boolean) {
+    fun changeNumOfRemaining(increaseOrDecrease : Boolean) {
         var curNum = binding.numOfRemaining.text.toString().toInt()
         if (increaseOrDecrease) {
             curNum++
-            binding.numOfRemaining.text = curNum.toString()
+            binding.numOfRemaining.text = PersianNum.convert(curNum.toString())
         } else {
             curNum--
-            binding.numOfRemaining.text = curNum.toString()
+            binding.numOfRemaining.text = PersianNum.convert(curNum.toString())
         }
     }
 
-    fun changeNumOFMistakes(increaseOrDecrease : Boolean) {
+    fun changeNumOfMistakes(increaseOrDecrease : Boolean) {
         var curNum = binding.numOfMistakes.text.toString().toInt()
         if (increaseOrDecrease) {
             curNum++
-            binding.numOfMistakes.text = curNum.toString()
+            binding.numOfMistakes.text = PersianNum.convert(curNum.toString())
         } else {
             curNum--
-            binding.numOfMistakes.text = curNum.toString()
+            binding.numOfMistakes.text = PersianNum.convert(curNum.toString())
         }
     }
 

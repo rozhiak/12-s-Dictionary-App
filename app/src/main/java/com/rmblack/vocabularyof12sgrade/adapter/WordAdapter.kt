@@ -68,13 +68,19 @@ class WordAdapter(private val wordList : ArrayList<Word>, private val reviewWord
             if (wordList[position].wordState == null) {
                 holder.questionImg.setImageResource(R.drawable.orange_question_mark)
                 wordList[position].wordState = false
+                reviewWords.changeNumOfMistakes(true)
+                reviewWords.changeNumOfRemaining(false)
             } else if (wordList[position].wordState == true) {
                 wordList[position].wordState = !wordList[position].wordState!!
                 holder.questionImg.setImageResource(R.drawable.orange_question_mark)
                 holder.checkImg.setImageResource(R.drawable.check_icon)
+                reviewWords.changeNumOfMistakes(true)
+                reviewWords.changeNumOfStudied(false)
             } else if (wordList[position].wordState != true) {
                 wordList[position].wordState = null
                 holder.questionImg.setImageResource(R.drawable.question_icon)
+                reviewWords.changeNumOfMistakes(false)
+                reviewWords.changeNumOfRemaining(true)
             }
         }
     }
@@ -87,13 +93,19 @@ class WordAdapter(private val wordList : ArrayList<Word>, private val reviewWord
             if (wordList[position].wordState == null) {
                 holder.checkImg.setImageResource(R.drawable.green_check_logo)
                 wordList[position].wordState = true
+                reviewWords.changeNumOfStudied(true)
+                reviewWords.changeNumOfRemaining(false)
             } else if (wordList[position].wordState == true) {
                 wordList[position].wordState = null
                 holder.checkImg.setImageResource(R.drawable.check_icon)
+                reviewWords.changeNumOfStudied(false)
+                reviewWords.changeNumOfRemaining(true)
             } else if (wordList[position].wordState != true) {
                 wordList[position].wordState = !wordList[position].wordState!!
                 holder.checkImg.setImageResource(R.drawable.green_check_logo)
                 holder.questionImg.setImageResource(R.drawable.question_icon)
+                reviewWords.changeNumOfMistakes(false)
+                reviewWords.changeNumOfStudied(true)
             }
         }
     }
