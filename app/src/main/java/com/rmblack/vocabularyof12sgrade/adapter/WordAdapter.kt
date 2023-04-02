@@ -49,10 +49,9 @@ class WordAdapter(private val wordList : ArrayList<Word>, private val reviewWord
         }
     }
 
-    ///
-    fun setIconsWhenSwiping(prePos: Int, nextPos: Int) {
+    fun setIconsWhenSwiping(prePos: Int) {
         notifyItemChanged(prePos)
-        notifyItemChanged(nextPos)
+        notifyItemChanged(prePos + 2)
     }
 
     private fun configCheckAndQButton(holder: WordVH, position: Int) {
@@ -66,23 +65,44 @@ class WordAdapter(private val wordList : ArrayList<Word>, private val reviewWord
     ) {
         holder.questionCard.setOnClickListener {
             if (wordList[position].wordState == null) {
-                holder.questionImg.setImageResource(R.drawable.orange_question_mark)
-                wordList[position].wordState = false
-                reviewWords.changeNumOfMistakes(true)
-                reviewWords.changeNumOfRemaining(false)
+                setQuestionIconWhenNull(holder, position)
             } else if (wordList[position].wordState == true) {
-                wordList[position].wordState = !wordList[position].wordState!!
-                holder.questionImg.setImageResource(R.drawable.orange_question_mark)
-                holder.checkImg.setImageResource(R.drawable.check_icon)
-                reviewWords.changeNumOfMistakes(true)
-                reviewWords.changeNumOfStudied(false)
+                setQuestionIconWhenTrue(position, holder)
             } else if (wordList[position].wordState != true) {
-                wordList[position].wordState = null
-                holder.questionImg.setImageResource(R.drawable.question_icon)
-                reviewWords.changeNumOfMistakes(false)
-                reviewWords.changeNumOfRemaining(true)
+                setQuestionIconWhenFalse(position, holder)
             }
         }
+    }
+
+    private fun setQuestionIconWhenFalse(
+        position: Int,
+        holder: WordVH
+    ) {
+        wordList[position].wordState = null
+        holder.questionImg.setImageResource(R.drawable.question_icon)
+        reviewWords.changeNumOfMistakes(false)
+        reviewWords.changeNumOfRemaining(true)
+    }
+
+    private fun setQuestionIconWhenTrue(
+        position: Int,
+        holder: WordVH
+    ) {
+        wordList[position].wordState = !wordList[position].wordState!!
+        holder.questionImg.setImageResource(R.drawable.orange_question_mark)
+        holder.checkImg.setImageResource(R.drawable.check_icon)
+        reviewWords.changeNumOfMistakes(true)
+        reviewWords.changeNumOfStudied(false)
+    }
+
+    private fun setQuestionIconWhenNull(
+        holder: WordVH,
+        position: Int
+    ) {
+        holder.questionImg.setImageResource(R.drawable.orange_question_mark)
+        wordList[position].wordState = false
+        reviewWords.changeNumOfMistakes(true)
+        reviewWords.changeNumOfRemaining(false)
     }
 
     private fun checkCardClick(
@@ -91,23 +111,44 @@ class WordAdapter(private val wordList : ArrayList<Word>, private val reviewWord
     ) {
         holder.checkCard.setOnClickListener {
             if (wordList[position].wordState == null) {
-                holder.checkImg.setImageResource(R.drawable.green_check_logo)
-                wordList[position].wordState = true
-                reviewWords.changeNumOfStudied(true)
-                reviewWords.changeNumOfRemaining(false)
+                setCheckIconWhenNull(holder, position)
             } else if (wordList[position].wordState == true) {
-                wordList[position].wordState = null
-                holder.checkImg.setImageResource(R.drawable.check_icon)
-                reviewWords.changeNumOfStudied(false)
-                reviewWords.changeNumOfRemaining(true)
+                setCheckIconWhenTrue(position, holder)
             } else if (wordList[position].wordState != true) {
-                wordList[position].wordState = !wordList[position].wordState!!
-                holder.checkImg.setImageResource(R.drawable.green_check_logo)
-                holder.questionImg.setImageResource(R.drawable.question_icon)
-                reviewWords.changeNumOfMistakes(false)
-                reviewWords.changeNumOfStudied(true)
+                setCheckIconWhenFalse(position, holder)
             }
         }
+    }
+
+    private fun setCheckIconWhenFalse(
+        position: Int,
+        holder: WordVH
+    ) {
+        wordList[position].wordState = !wordList[position].wordState!!
+        holder.checkImg.setImageResource(R.drawable.green_check_logo)
+        holder.questionImg.setImageResource(R.drawable.question_icon)
+        reviewWords.changeNumOfMistakes(false)
+        reviewWords.changeNumOfStudied(true)
+    }
+
+    private fun setCheckIconWhenTrue(
+        position: Int,
+        holder: WordVH
+    ) {
+        wordList[position].wordState = null
+        holder.checkImg.setImageResource(R.drawable.check_icon)
+        reviewWords.changeNumOfStudied(false)
+        reviewWords.changeNumOfRemaining(true)
+    }
+
+    private fun setCheckIconWhenNull(
+        holder: WordVH,
+        position: Int
+    ) {
+        holder.checkImg.setImageResource(R.drawable.green_check_logo)
+        wordList[position].wordState = true
+        reviewWords.changeNumOfStudied(true)
+        reviewWords.changeNumOfRemaining(false)
     }
 
     private fun showAnswer(

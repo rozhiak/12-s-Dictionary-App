@@ -53,6 +53,8 @@ class ReviewWords : AppCompatActivity() {
         for (word in tarLesson.wordsToReview!!) {
             if (word.wordState == false) {
                 tarLesson.increaseWordWrongNum(word)
+            } else {
+                tarLesson.increaseWordCorrectNum(word)
             }
         }
         val sp = this.getSharedPreferences(DataBaseInfo.SP_NAME, MODE_PRIVATE)
@@ -60,8 +62,10 @@ class ReviewWords : AppCompatActivity() {
         val serializesArray = Json.encodeToString(tarLesson.words)
         editor.putString(tarLesson.title, serializesArray)
         editor.apply()
-        val words : ArrayList<Word> = Json.decodeFromString(sp.getString(tarLesson.title, "").toString())
-        Log.e("", words.toString())
+
+//
+//        val words : ArrayList<Word> = Json.decodeFromString(sp.getString(tarLesson.title, "").toString())
+//        Log.e("", words.toString())
     }
 
     private fun initUIElements() {
@@ -144,7 +148,7 @@ class ReviewWords : AppCompatActivity() {
             ) {
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels)
                 binding.wordsViewPager.post {
-                    wordsAdapter.setIconsWhenSwiping(position-1, position+1)
+                    wordsAdapter.setIconsWhenSwiping(position-1)
                 }
                 hidePreviousWordAnswer(words, position)
             }

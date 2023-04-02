@@ -10,6 +10,7 @@ import com.rmblack.vocabularyof12sgrade.R
 import com.rmblack.vocabularyof12sgrade.adapter.LessonsRecAdapter
 import com.rmblack.vocabularyof12sgrade.databinding.ActivityMainBinding
 import com.rmblack.vocabularyof12sgrade.models.Lesson
+import com.rmblack.vocabularyof12sgrade.utils.DataBaseInfo
 
 class MainActivity : AppCompatActivity() {
 
