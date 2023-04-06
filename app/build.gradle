@@ -57,5 +57,8 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
     //For saving in data base
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1'
+    //Progressing button
+    implementation 'br.com.simplepass:loading-button-android:2.2.0'
+
 
 }

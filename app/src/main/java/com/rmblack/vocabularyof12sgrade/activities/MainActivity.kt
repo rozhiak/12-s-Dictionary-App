@@ -1,5 +1,6 @@
 package com.rmblack.vocabularyof12sgrade.activities
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +24,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         window.navigationBarColor = ContextCompat.getColor(this, R.color.teeth_white)
         initializeLessons()
+//        getSharedPreferences(DataBaseInfo.SP_NAME, Context.MODE_PRIVATE).edit().clear().commit()
     }
 
     private fun initializeLessons() {
@@ -73,6 +75,7 @@ class MainActivity : AppCompatActivity() {
         val adapter = LessonsRecAdapter(lessons, this)
         rvLessons.adapter = adapter
         rvLessons.layoutManager = LinearLayoutManager(this)
+
     }
 
     override fun onResume() {

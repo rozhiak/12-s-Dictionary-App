@@ -13,6 +13,7 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import br.com.simplepass.loadingbutton.customViews.CircularProgressButton
 import com.rmblack.vocabularyof12sgrade.R
 import com.rmblack.vocabularyof12sgrade.activities.ReviewWords
 import com.rmblack.vocabularyof12sgrade.models.Lesson
@@ -51,8 +52,11 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
         val twoMistakeSwitch : SwitchCompat = itemView.findViewById(R.id.two_mistakes_switch)
         val threeMistakeSwitch : SwitchCompat = itemView.findViewById(R.id.three_mistakes_switch)
         val moreThanThreeMistakesSwitch : SwitchCompat = itemView.findViewById(R.id.more_than_three_mistakes_switch)
-        val startReviewCard : CardView = itemView.findViewById(R.id.startReviewCard)
-        val secondStartCard : CardView = itemView.findViewById(R.id.secondStartCardView)
+//        val startReviewCard : CardView = itemView.findViewById(R.id.startReviewCard)
+//        val secondStartCard : CardView = itemView.findViewById(R.id.secondStartCardView)
+        val firstLoadingStartBtn: CircularProgressButton = itemView.findViewById(R.id.first_loading_start_btn)
+        val secondLoadingStartBtn: CircularProgressButton = itemView.findViewById(R.id.second_loading_start_btn)
+
 
     }
 
@@ -66,10 +70,11 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         setSwitchesToDefault(holder)
         setEachLesson(position, holder)
-        holder.startReviewCard.setOnClickListener {
-            reviewWords(holder.bindingAdapterPosition)
+        holder.firstLoadingStartBtn.setOnClickListener {
+            holder.firstLoadingStartBtn.startAnimation()
+            reviewWords(holder)
         }
-        holder.secondStartCard.setOnClickListener {
+        holder.secondLoadingStartBtn.setOnClickListener {
             reviewRepeatedMistakeWords(holder)
         }
     }
@@ -83,6 +88,7 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
         if (!oneMis && !twoMis && !threeMis && !threeAndMoreMis) {
             //Say to user that he/she should select number of mistakes.
         } else {
+            holder.secondLoadingStartBtn.startAnimation()
             val tarPos = holder.bindingAdapterPosition
             if (sp.contains(lessons[tarPos].title)) {
                 val words = getWordsFromDB(tarPos)
@@ -91,12 +97,15 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
                 collectWords(words, oneMis, wordsToReview, twoMis, threeMis, threeAndMoreMis)
 
                 if (wordsToReview.size == 0) {
+                    holder.secondLoadingStartBtn.revertAnimation()
                     //Say to user the there is no word with repeated mistakes
                 } else {
                     lessons[tarPos].wordsToReview = wordsToReview
-                    startReviewActivity(tarPos)
+                    holder.secondLoadingStartBtn.revertAnimation()
+                    startReviewActivity(holder)
                 }
             } else {
+                holder.secondLoadingStartBtn.revertAnimation()
                 //Say to user that he/she should review all words at least 1 time then review repeated mistake words.
             }
         }
@@ -150,9 +159,13 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
     ) {
         if (lesson.visibility) {
             holder.expandedLayout.visibility = View.VISIBLE
+            holder.firstLoadingStartBtn.visibility = View.VISIBLE
+            holder.secondLoadingStartBtn.visibility = View.VISIBLE
             holder.lessonCard.setCardBackgroundColor(Color.parseColor("#ECEFF7"))
         } else {
             holder.expandedLayout.visibility = View.GONE
+            holder.firstLoadingStartBtn.visibility = View.GONE
+            holder.secondLoadingStartBtn.visibility = View.GONE
             holder.lessonCard.setCardBackgroundColor(Color.parseColor("#F8F9F9"))
         }
     }
@@ -174,12 +187,18 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
                 }
             }
             lesson.visibility = !lesson.visibility
+            setStartBtnsToDefault(holder)
             notifyItemChanged(position)
             recyclerView.post {
                 recyclerView.smoothScrollToPosition(position)
             }
         }
         return lesson
+    }
+
+    private fun setStartBtnsToDefault(holder: ViewHolder) {
+        holder.firstLoadingStartBtn.revertAnimation()
+        holder.secondLoadingStartBtn.revertAnimation()
     }
 
     private fun setSwitchesToDefault(holder: ViewHolder) {
@@ -189,24 +208,25 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
         holder.moreThanThreeMistakesSwitch.isChecked = false
     }
 
-    private fun reviewWords(tarPos: Int) {
-        if (sp.contains(lessons[tarPos].title)) {
-            getAndFetchDataToLesson(tarPos)
+    private fun reviewWords(holder: ViewHolder) {
+        if (sp.contains(lessons[holder.bindingAdapterPosition].title)) {
+            getAndFetchDataToLesson(holder)
         } else {
-            getDestinations(tarPos)
+            getDestinations(holder)
         }
     }
 
-    private fun getAndFetchDataToLesson(tarPos: Int) {
+    private fun getAndFetchDataToLesson(holder: ViewHolder) {
         val wordList: java.util.ArrayList<Word> =
-            getWordsFromDB(tarPos)
+            getWordsFromDB(holder.bindingAdapterPosition)
         Log.e("", wordList.toString())
 
-        if (lessons[tarPos].words == null) {
-            lessons[tarPos].words = wordList
+        if (lessons[holder.bindingAdapterPosition].words == null) {
+            lessons[holder.bindingAdapterPosition].words = wordList
         }
-        lessons[tarPos].wordsToReview = wordList
-        startReviewActivity(tarPos)
+        lessons[holder.bindingAdapterPosition].wordsToReview = wordList
+        holder.firstLoadingStartBtn.revertAnimation()
+        startReviewActivity(holder)
     }
 
     private fun getWordsFromDB(tarPos: Int): java.util.ArrayList<Word> {
@@ -215,7 +235,7 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
         )
     }
 
-    private fun getDestinations(tarPos: Int) {
+    private fun getDestinations(holder: ViewHolder) {
         val urlsApi = RetrofitHelper.getInstance().create(IService::class.java)
         val call: Call<ArrayList<URL>> = urlsApi.getURLs()
         call.enqueue(object : Callback<ArrayList<URL>> {
@@ -223,41 +243,52 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
                 call: Call<ArrayList<URL>>,
                 response: Response<ArrayList<URL>>
             ) {
-                if (response.code() == 200) {
-                    if (response.body() != null && response.isSuccessful) {
-                        getWords(response, tarPos)
-                    }
+                if (response.code() == 200 && response.isSuccessful && response.body() != null) {
+                    getWords(response, holder)
+                } else {
+                    //server error
+                    holder.firstLoadingStartBtn.revertAnimation()
                 }
             }
 
             override fun onFailure(call: Call<ArrayList<URL>>, t: Throwable) {
-
+                holder.firstLoadingStartBtn.revertAnimation()
             }
         })
     }
 
     private fun getWords(
         response: Response<ArrayList<URL>>,
-        tarPos: Int
+        holder: ViewHolder
     ) {
         val retrofit = Retrofit.Builder()
             .baseUrl("https://api-generator.retool.com/")
             .addConverterFactory(GsonConverterFactory.create()).build().create(IService::class.java)
-        val wordCall: Call<ArrayList<Word>> = retrofit.getWords(response.body()!![tarPos].wordsURL)
-        wordCall.enqueue(object : Callback<ArrayList<Word>> {
-            override fun onResponse(
-                call: Call<ArrayList<Word>>,
-                response: Response<ArrayList<Word>>
-            ) {
-                saveWordsToDB(response, tarPos)
-                saveWordsToLesson(tarPos, response)
-                startReviewActivity(tarPos)
-            }
+        if (holder.bindingAdapterPosition < response.body()!!.size) {
+            val wordCall: Call<ArrayList<Word>> = retrofit.getWords(response.body()!![holder.bindingAdapterPosition].wordsURL)
+            wordCall.enqueue(object : Callback<ArrayList<Word>> {
+                override fun onResponse(
+                    call: Call<ArrayList<Word>>,
+                    response: Response<ArrayList<Word>>
+                ) {
+                    if (response.code() == 200 && response.isSuccessful && response.body() != null) {
+                        saveWordsToDB(response, holder.bindingAdapterPosition)
+                        saveWordsToLesson(holder.bindingAdapterPosition, response)
+                        holder.firstLoadingStartBtn.revertAnimation()
+                        startReviewActivity(holder)
+                    } else {
+                        //server error
+                        holder.firstLoadingStartBtn.revertAnimation()
+                    }
+                }
 
-            override fun onFailure(call: Call<ArrayList<Word>>, t: Throwable) {
-                Log.e("urls", t.toString())
-            }
-        })
+                override fun onFailure(call: Call<ArrayList<Word>>, t: Throwable) {
+                    holder.firstLoadingStartBtn.revertAnimation()
+                }
+            })
+        } else {
+            //A problem server
+        }
     }
 
     private fun saveWordsToLesson(
@@ -268,8 +299,8 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
         lessons[tarPos].wordsToReview = response.body()
     }
 
-    private fun startReviewActivity(tarPos: Int) {
-        val serializesLesson = Json.encodeToString(lessons[tarPos])
+    private fun startReviewActivity(holder: ViewHolder) {
+        val serializesLesson = Json.encodeToString(lessons[holder.bindingAdapterPosition])
         val intent = Intent(context, ReviewWords::class.java)
         intent.putExtra(DataBaseInfo.BUNDLE_LESSON, serializesLesson)
         context.startActivity(intent)
