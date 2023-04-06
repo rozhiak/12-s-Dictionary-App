@@ -52,8 +52,6 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
         val twoMistakeSwitch : SwitchCompat = itemView.findViewById(R.id.two_mistakes_switch)
         val threeMistakeSwitch : SwitchCompat = itemView.findViewById(R.id.three_mistakes_switch)
         val moreThanThreeMistakesSwitch : SwitchCompat = itemView.findViewById(R.id.more_than_three_mistakes_switch)
-//        val startReviewCard : CardView = itemView.findViewById(R.id.startReviewCard)
-//        val secondStartCard : CardView = itemView.findViewById(R.id.secondStartCardView)
         val firstLoadingStartBtn: CircularProgressButton = itemView.findViewById(R.id.first_loading_start_btn)
         val secondLoadingStartBtn: CircularProgressButton = itemView.findViewById(R.id.second_loading_start_btn)
 
@@ -287,7 +285,8 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
                 }
             })
         } else {
-            //A problem server
+            //A problem in server
+            holder.firstLoadingStartBtn.revertAnimation()
         }
     }
 

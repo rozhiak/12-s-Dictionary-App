@@ -2,7 +2,6 @@ package com.rmblack.vocabularyof12sgrade.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
@@ -26,6 +25,7 @@ class ReviewWords : AppCompatActivity() {
     private lateinit var wordsViewPager: ViewPager2
     private lateinit var wordsAdapter: WordAdapter
     private lateinit var tarLesson : Lesson
+    private var saveFlag : Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,18 +36,23 @@ class ReviewWords : AppCompatActivity() {
         initWords()
         setUpTransformer()
         initUIElements()
-//        configBTNs()
+        configBTNs()
     }
 
-//    private fun configBTNs() {
+    private fun configBTNs() {
 //        configEndBtn()
-//    }
-//
-//    private fun configEndBtn() {
-//        binding.endBtn.setOnClickListener {
-//            saveResToDB()
-//        }
-//    }
+        binding.backBtn.setOnClickListener {
+            saveFlag = false
+            finish()
+        }
+
+    }
+
+    private fun configEndBtn() {
+        binding.endBtn.setOnClickListener {
+            saveResToDB()
+        }
+    }
 
     private fun saveResToDB() {
         for (word in tarLesson.wordsToReview!!) {
@@ -62,10 +67,6 @@ class ReviewWords : AppCompatActivity() {
         val serializesArray = Json.encodeToString(tarLesson.words)
         editor.putString(tarLesson.title, serializesArray)
         editor.apply()
-
-//
-//        val words : ArrayList<Word> = Json.decodeFromString(sp.getString(tarLesson.title, "").toString())
-//        Log.e("", words.toString())
     }
 
     private fun initUIElements() {
@@ -181,6 +182,8 @@ class ReviewWords : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        saveResToDB()
+        if (saveFlag) {
+            saveResToDB()
+        }
     }
 }
