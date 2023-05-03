@@ -31,6 +31,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+
 class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: Context) : RecyclerView.Adapter<LessonsRecAdapter.ViewHolder>() {
 
     private lateinit var recyclerView : RecyclerView
@@ -54,8 +55,6 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
         val moreThanThreeMistakesSwitch : SwitchCompat = itemView.findViewById(R.id.more_than_three_mistakes_switch)
         val firstLoadingStartBtn: CircularProgressButton = itemView.findViewById(R.id.first_loading_start_btn)
         val secondLoadingStartBtn: CircularProgressButton = itemView.findViewById(R.id.second_loading_start_btn)
-
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -140,6 +139,33 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
         val lesson: Lesson = lessonClick(position, holder)
         lessonVisibility(lesson, holder)
         lessonInfo(holder, lesson)
+        saveSwitchesState(holder)
+    }
+
+    private fun saveSwitchesState(
+        holder: ViewHolder
+    ) {
+        val lesson = lessons[holder.absoluteAdapterPosition]
+        holder.oneMistakeSwitch.setOnCheckedChangeListener { compoundButton, b ->
+            if (compoundButton.isPressed) {
+                lesson.firstSwitch = holder.oneMistakeSwitch.isChecked
+            }
+        }
+        holder.twoMistakeSwitch.setOnCheckedChangeListener { compoundButton, b ->
+            if (compoundButton.isPressed) {
+                lesson.secondSwitch = holder.twoMistakeSwitch.isChecked
+            }
+        }
+        holder.threeMistakeSwitch.setOnCheckedChangeListener { compoundButton, b ->
+            if (compoundButton.isPressed) {
+                lesson.thirdSwitch = holder.threeMistakeSwitch.isChecked
+            }
+        }
+        holder.moreThanThreeMistakesSwitch.setOnCheckedChangeListener { compoundButton, b ->
+            if (compoundButton.isPressed) {
+                lesson.forthSwitch = holder.moreThanThreeMistakesSwitch.isChecked
+            }
+        }
     }
 
     private fun lessonInfo(
@@ -200,10 +226,10 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
     }
 
     private fun setSwitchesToDefault(holder: ViewHolder) {
-        holder.oneMistakeSwitch.isChecked = false
-        holder.twoMistakeSwitch.isChecked = false
-        holder.threeMistakeSwitch.isChecked = false
-        holder.moreThanThreeMistakesSwitch.isChecked = false
+        holder.oneMistakeSwitch.isChecked = lessons[holder.bindingAdapterPosition].firstSwitch
+        holder.twoMistakeSwitch.isChecked = lessons[holder.bindingAdapterPosition].secondSwitch
+        holder.threeMistakeSwitch.isChecked = lessons[holder.bindingAdapterPosition].thirdSwitch
+        holder.moreThanThreeMistakesSwitch.isChecked = lessons[holder.bindingAdapterPosition].forthSwitch
     }
 
     private fun reviewWords(holder: ViewHolder) {
@@ -285,7 +311,7 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
                 }
             })
         } else {
-            //A problem in server
+            //A problem in server is occurred
             holder.firstLoadingStartBtn.revertAnimation()
         }
     }
@@ -318,5 +344,4 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
     override fun getItemCount(): Int {
         return lessons.size
     }
-
 }

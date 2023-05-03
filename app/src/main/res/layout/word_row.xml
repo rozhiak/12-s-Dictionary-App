@@ -66,6 +66,7 @@
                 android:layout_height="match_parent">
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:justificationMode="inter_word"
                     android:lineSpacingExtra="3dp"
                     android:textDirection="rtl"
                     android:textStyle="normal"

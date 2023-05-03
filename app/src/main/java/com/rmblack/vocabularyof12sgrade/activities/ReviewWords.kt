@@ -25,7 +25,6 @@ class ReviewWords : AppCompatActivity() {
     private lateinit var wordsViewPager: ViewPager2
     private lateinit var wordsAdapter: WordAdapter
     private lateinit var tarLesson : Lesson
-    private var saveFlag : Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,9 +39,8 @@ class ReviewWords : AppCompatActivity() {
     }
 
     private fun configBTNs() {
-//        configEndBtn()
+        configEndBtn()
         binding.backBtn.setOnClickListener {
-            saveFlag = false
             finish()
         }
 
@@ -50,7 +48,7 @@ class ReviewWords : AppCompatActivity() {
 
     private fun configEndBtn() {
         binding.endBtn.setOnClickListener {
-            saveResToDB()
+            finish()
         }
     }
 
@@ -58,7 +56,7 @@ class ReviewWords : AppCompatActivity() {
         for (word in tarLesson.wordsToReview!!) {
             if (word.wordState == false) {
                 tarLesson.increaseWordWrongNum(word)
-            } else {
+            } else if (word.wordState == true){
                 tarLesson.increaseWordCorrectNum(word)
             }
         }
@@ -182,8 +180,6 @@ class ReviewWords : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (saveFlag) {
             saveResToDB()
-        }
     }
 }

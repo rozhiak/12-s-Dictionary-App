@@ -47,7 +47,7 @@
                         android:textSize="20sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="پایان"/>
+                        android:text="@string/end"/>
                 </com.google.android.material.card.MaterialCardView>
 
                 <androidx.appcompat.widget.AppCompatImageView
@@ -89,7 +89,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/gray"
                     android:textSize="19sp"
-                    android:text="کلمه"
+                    android:text="@string/word"
                     app:layout_constraintEnd_toStartOf="@id/wordsNum"
                     app:layout_constraintTop_toTopOf="@id/wordsNum"
                     app:layout_constraintBottom_toBottomOf="@id/wordsNum"/>
@@ -133,7 +133,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="بلد بودم"
+            android:text="@string/learned"
             android:textColor="@color/gray"
             app:layout_constraintEnd_toEndOf="@+id/green_circle"
             app:layout_constraintStart_toStartOf="@id/green_circle"
@@ -171,7 +171,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/iransans"
-            android:text="باقی مانده"
+            android:text="@string/remained"
             android:textStyle="bold"
             android:textSize="13sp"/>
 
@@ -203,7 +203,7 @@
             android:textSize="13sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="بلد نبودم"
+            android:text="@string/forget"
             android:id="@+id/mistakes_tv"
             app:layout_constraintTop_toBottomOf="@id/orange_circle"
             app:layout_constraintEnd_toEndOf="@id/orange_circle"
