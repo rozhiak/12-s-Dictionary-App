@@ -14,8 +14,11 @@ import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import br.com.simplepass.loadingbutton.customViews.CircularProgressButton
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import com.rmblack.vocabularyof12sgrade.R
 import com.rmblack.vocabularyof12sgrade.activities.ReviewWords
+import com.rmblack.vocabularyof12sgrade.databinding.ActivityMainBinding
 import com.rmblack.vocabularyof12sgrade.models.Lesson
 import com.rmblack.vocabularyof12sgrade.models.URL
 import com.rmblack.vocabularyof12sgrade.models.Word
@@ -32,7 +35,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: Context) : RecyclerView.Adapter<LessonsRecAdapter.ViewHolder>() {
+class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: Context, private val binding: ActivityMainBinding) : RecyclerView.Adapter<LessonsRecAdapter.ViewHolder>() {
 
     private lateinit var recyclerView : RecyclerView
     private val sp = context.getSharedPreferences(DataBaseInfo.SP_NAME, Context.MODE_PRIVATE)
@@ -104,9 +107,22 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
             } else {
                 holder.secondLoadingStartBtn.revertAnimation()
                 //Say to user that he/she should review all words at least 1 time then review repeated mistake words.
-
             }
         }
+    }
+
+    private fun makeSnack(text: String) {
+        val snackBar = Snackbar.make(binding.root, "", Snackbar.LENGTH_SHORT)
+        val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val customSnackView: View = layoutInflater.inflate(R.layout.snackbar_layout, null)
+        val textView = customSnackView.findViewById<AppCompatTextView>(R.id.description)
+        textView.text = text
+        snackBar.animationMode = BaseTransientBottomBar.ANIMATION_MODE_SLIDE
+        snackBar.view.setBackgroundColor(Color.TRANSPARENT)
+        val snackBarLayout = snackBar.view as Snackbar.SnackbarLayout
+        snackBarLayout.setPadding(5, 0, 5, 0)
+        snackBarLayout.addView(customSnackView, 0)
+        snackBar.show()
     }
 
     private fun collectWords(
