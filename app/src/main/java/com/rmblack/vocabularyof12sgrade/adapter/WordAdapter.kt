@@ -1,5 +1,6 @@
 package com.rmblack.vocabularyof12sgrade.adapter
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +14,9 @@ import com.rmblack.vocabularyof12sgrade.R
 import com.rmblack.vocabularyof12sgrade.activities.ReviewWords
 import com.rmblack.vocabularyof12sgrade.models.Word
 
-class WordAdapter(private val wordList : ArrayList<Word>, private val reviewWords: ReviewWords)
+class WordAdapter(private val wordList : ArrayList<Word>,
+                  private val reviewWords: ReviewWords,
+                  private val savedStateInstances: Bundle?)
     : RecyclerView.Adapter<WordAdapter.WordVH>() {
 
     private lateinit var holder: WordVH
@@ -30,18 +33,39 @@ class WordAdapter(private val wordList : ArrayList<Word>, private val reviewWord
         showAnswer(holder, word)
         configCheckAndQButton(holder, position)
         setIcons(position, holder)
+        resetWordCardHeightToDefault(savedStateInstances, position, holder)
+    }
+
+    private fun resetWordCardHeightToDefault(
+        savedStateInstances: Bundle?,
+        position: Int,
+        holder: WordVH
+    ) {
+        if (savedStateInstances != null) {
+            val curAsnHeight = savedStateInstances.getInt("ans_height")
+            if (wordList[position].answerVisibility) {
+                val params = holder.wordCard.layoutParams as ViewGroup.MarginLayoutParams
+                params.bottomMargin = curAsnHeight + 110
+                holder.wordCard.layoutParams = params
+            }
+        }
     }
 
     private fun setIcons(
         position: Int,
         holder: WordVH
     ) {
+        if (wordList[position].answerVisibility) {
+            holder.showAnswerImg.setImageResource(R.drawable.open_eye)
+            holder.showAnswerImg.setBackgroundResource(R.color.purple)
+        }
         if (wordList[position].wordState == null) {
             holder.checkImg.setImageResource(R.drawable.check_icon)
             holder.questionImg.setImageResource(R.drawable.question_icon)
         } else if (wordList[position].wordState == true) {
             holder.checkImg.setImageResource(R.drawable.green_check_logo)
             holder.questionImg.setImageResource(R.drawable.question_icon)
+
         } else if (wordList[position].wordState != true) {
             holder.checkImg.setImageResource(R.drawable.check_icon)
             holder.questionImg.setImageResource(R.drawable.orange_question_mark)
@@ -165,23 +189,23 @@ class WordAdapter(private val wordList : ArrayList<Word>, private val reviewWord
         holder.showAnswerCard.setOnClickListener {
             word.answerVisibility = !word.answerVisibility
             if (word.answerVisibility) {
-                show(holder)
+                show(holder, 190)
             } else {
-                hide(holder)
+                hide(holder, 190)
             }
         }
     }
 
-    private fun hide(holder: WordVH) {
-        resizeWordCard(holder, 80)
+    private fun hide(holder: WordVH, duration: Long) {
+        resizeWordCard(holder, 80, duration)
         holder.showAnswerImg.setImageResource(R.drawable.close_eye_icon)
         holder.showAnswerImg.setBackgroundResource(R.color.white)
         changeEyeIcon(false, holder)
     }
 
-    private fun show(holder: WordVH) {
+    private fun show(holder: WordVH, duration: Long) {
         val size = holder.meaning.measuredHeight
-        resizeWordCard(holder, size + 110)
+        resizeWordCard(holder, size + 110, duration)
         changeEyeIcon(true, holder)
     }
 
@@ -204,7 +228,7 @@ class WordAdapter(private val wordList : ArrayList<Word>, private val reviewWord
         }
     }
 
-    fun resizeWordCard(holder: WordVH, size: Int) {
+    fun resizeWordCard(holder: WordVH, size: Int, duration: Long) {
         val lParams = holder.wordCard.layoutParams as ViewGroup.MarginLayoutParams
         val bottomMarginStart = lParams.bottomMargin // your start value
         val a = object : Animation() {
@@ -215,7 +239,7 @@ class WordAdapter(private val wordList : ArrayList<Word>, private val reviewWord
                 holder.wordCard.layoutParams = params
             }
         }
-        a.duration = 190
+        a.duration = duration
         holder.wordCard.startAnimation(a)
     }
 

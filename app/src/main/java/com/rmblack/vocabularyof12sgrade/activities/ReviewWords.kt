@@ -1,19 +1,19 @@
 package com.rmblack.vocabularyof12sgrade.activities
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.rmblack.vocabularyof12sgrade.R
-import com.rmblack.vocabularyof12sgrade.utils.DataBaseInfo
-import com.rmblack.vocabularyof12sgrade.utils.PersianNum
 import com.rmblack.vocabularyof12sgrade.adapter.WordAdapter
 import com.rmblack.vocabularyof12sgrade.databinding.ActivityReviewWordsBinding
 import com.rmblack.vocabularyof12sgrade.models.Lesson
 import com.rmblack.vocabularyof12sgrade.models.Word
+import com.rmblack.vocabularyof12sgrade.utils.DataBaseInfo
+import com.rmblack.vocabularyof12sgrade.utils.PersianNum
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -25,6 +25,7 @@ class ReviewWords : AppCompatActivity() {
     private lateinit var wordsViewPager: ViewPager2
     private lateinit var wordsAdapter: WordAdapter
     private lateinit var tarLesson : Lesson
+    private var curPos: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +54,11 @@ class ReviewWords : AppCompatActivity() {
         outState.putString("num_Of_mistakes", binding.numOfMistakes.text.toString())
         outState.putString("num_Of_remaining", binding.numOfRemaining.text.toString())
         outState.putString("num_Of_studied", binding.numOfStudied.text.toString())
+        val viewHolder: WordAdapter.WordVH =
+            (wordsViewPager.getChildAt(0) as RecyclerView).findViewHolderForAdapterPosition(
+                curPos
+            ) as WordAdapter.WordVH
+        outState.putInt("ans_height", viewHolder.meaning.height)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -148,7 +154,7 @@ class ReviewWords : AppCompatActivity() {
             tarLesson.wordsToReview = savedInstanceState.getString("words_to_review")
                 ?.let { Json.decodeFromString(it) }
         }
-        wordsAdapter = WordAdapter(tarLesson.wordsToReview!!, this)
+        wordsAdapter = WordAdapter(tarLesson.wordsToReview!!, this, savedInstanceState)
         wordsViewPager.adapter = wordsAdapter
         wordsViewPager.offscreenPageLimit = 3
         wordsViewPager.clipToPadding = false
@@ -170,10 +176,13 @@ class ReviewWords : AppCompatActivity() {
                 positionOffsetPixels: Int
             ) {
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels)
-                binding.wordsViewPager.post {
-                    wordsAdapter.setIconsWhenSwiping(position-1)
+                curPos = position
+                if (wordsViewPager.scrollState != 0) {
+                    binding.wordsViewPager.post {
+                        wordsAdapter.setIconsWhenSwiping(position-1)
+                    }
+                    hidePreviousWordAnswer(words, position)
                 }
-                hidePreviousWordAnswer(words, position)
             }
         })
     }
@@ -197,7 +206,7 @@ class ReviewWords : AppCompatActivity() {
             (wordsViewPager.getChildAt(0) as RecyclerView).findViewHolderForAdapterPosition(
                 position
             ) as WordAdapter.WordVH
-        wordsAdapter.resizeWordCard(viewHolder, 80)
+        wordsAdapter.resizeWordCard(viewHolder, 80, 190)
         wordsAdapter.changeEyeIcon(false, viewHolder)
         words[position].answerVisibility = !words[position].answerVisibility
     }
