@@ -189,23 +189,23 @@ class WordAdapter(private val wordList : ArrayList<Word>,
         holder.showAnswerCard.setOnClickListener {
             word.answerVisibility = !word.answerVisibility
             if (word.answerVisibility) {
-                show(holder, 190)
+                show(holder)
             } else {
-                hide(holder, 190)
+                hide(holder)
             }
         }
     }
 
-    private fun hide(holder: WordVH, duration: Long) {
-        resizeWordCard(holder, 80, duration)
+    private fun hide(holder: WordVH) {
+        resizeWordCard(holder, 80, 190)
         holder.showAnswerImg.setImageResource(R.drawable.close_eye_icon)
         holder.showAnswerImg.setBackgroundResource(R.color.white)
         changeEyeIcon(false, holder)
     }
 
-    private fun show(holder: WordVH, duration: Long) {
+    private fun show(holder: WordVH) {
         val size = holder.meaning.measuredHeight
-        resizeWordCard(holder, size + 110, duration)
+        resizeWordCard(holder, size + 110, 190)
         changeEyeIcon(true, holder)
     }
 

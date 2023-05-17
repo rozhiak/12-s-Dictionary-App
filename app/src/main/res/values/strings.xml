@@ -6,4 +6,11 @@
     <string name="learned">بلد بودم</string>
     <string name="forget">بلد نبودم</string>
     <string name="remained">باقی مانده</string>
+    <string name="review_all_words">دوره تمام لغات درس</string>
+    <string name="start">شروع</string>
+    <string name="most_mistake_words">دوره لغات پر اشتباه</string>
+    <string name="one_time_mistake">یک بار اشتباه</string>
+    <string name="two_times_mistake">دو بار اشتباه</string>
+    <string name="three_times_mistake">سه بار اشتباه</string>
+    <string name="more_than_three_times_mistake">بیش از سه بار اشتباه</string>
 </resources>

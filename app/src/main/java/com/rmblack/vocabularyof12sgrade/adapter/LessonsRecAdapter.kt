@@ -164,22 +164,22 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
         holder: ViewHolder
     ) {
         val lesson = lessons[holder.absoluteAdapterPosition]
-        holder.oneMistakeSwitch.setOnCheckedChangeListener { compoundButton, b ->
+        holder.oneMistakeSwitch.setOnCheckedChangeListener { compoundButton, _ ->
             if (compoundButton.isPressed) {
                 lesson.firstSwitch = holder.oneMistakeSwitch.isChecked
             }
         }
-        holder.twoMistakeSwitch.setOnCheckedChangeListener { compoundButton, b ->
+        holder.twoMistakeSwitch.setOnCheckedChangeListener { compoundButton, _ ->
             if (compoundButton.isPressed) {
                 lesson.secondSwitch = holder.twoMistakeSwitch.isChecked
             }
         }
-        holder.threeMistakeSwitch.setOnCheckedChangeListener { compoundButton, b ->
+        holder.threeMistakeSwitch.setOnCheckedChangeListener { compoundButton, _ ->
             if (compoundButton.isPressed) {
                 lesson.thirdSwitch = holder.threeMistakeSwitch.isChecked
             }
         }
-        holder.moreThanThreeMistakesSwitch.setOnCheckedChangeListener { compoundButton, b ->
+        holder.moreThanThreeMistakesSwitch.setOnCheckedChangeListener { compoundButton, _ ->
             if (compoundButton.isPressed) {
                 lesson.forthSwitch = holder.moreThanThreeMistakesSwitch.isChecked
             }

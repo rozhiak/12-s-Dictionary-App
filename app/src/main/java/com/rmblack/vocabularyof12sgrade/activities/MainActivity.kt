@@ -1,6 +1,5 @@
 package com.rmblack.vocabularyof12sgrade.activities
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -12,7 +11,6 @@ import com.rmblack.vocabularyof12sgrade.R
 import com.rmblack.vocabularyof12sgrade.adapter.LessonsRecAdapter
 import com.rmblack.vocabularyof12sgrade.databinding.ActivityMainBinding
 import com.rmblack.vocabularyof12sgrade.models.Lesson
-import com.rmblack.vocabularyof12sgrade.utils.DataBaseInfo
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,7 +18,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var lessons: ArrayList<Lesson>
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
