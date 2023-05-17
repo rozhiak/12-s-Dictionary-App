@@ -107,6 +107,7 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
             } else {
                 holder.secondLoadingStartBtn.revertAnimation()
                 //Say to user that he/she should review all words at least 1 time then review repeated mistake words.
+                makeSnack("سلام من به تو ای یار قدیمی")
             }
         }
     }

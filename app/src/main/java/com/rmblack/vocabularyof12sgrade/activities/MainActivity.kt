@@ -80,9 +80,14 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun onResume() {
-        super.onResume()
-        configLessonsRec(lessons)
+    override fun onPause() {
+        //use saved state here
+        super.onPause()
+        for (i in 0 until lessons.size) {
+            if (lessons[i].visibility) {
+                println(i)
+            }
+        }
     }
 
 }

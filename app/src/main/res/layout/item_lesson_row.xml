@@ -160,9 +160,8 @@
                         android:focusable="true">
 
                         <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_marginTop="3dp"
                             android:textStyle="bold"
-                            android:layout_marginBottom="15dp"
-                            android:layout_marginTop="14dp"
                             android:layout_marginEnd="10dp"
                             android:id="@+id/review_repeated_mistakes_tv"
                             android:layout_width="wrap_content"
@@ -172,7 +171,8 @@
                             android:textColor="@color/orange"
                             android:textSize="18sp"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintBottom_toBottomOf="@id/secondStartCardView"
+                            app:layout_constraintTop_toTopOf="@id/secondStartCardView" />
 
                         <androidx.cardview.widget.CardView
                             android:id="@+id/secondStartCardView"
@@ -222,7 +222,7 @@
                             app:layout_constraintBottom_toBottomOf="@+id/two_mistakes_switch"
                             app:layout_constraintEnd_toEndOf="@+id/appCompatTextView"
                             app:layout_constraintStart_toStartOf="@+id/appCompatTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/one_mistake_switch" />
+                            app:layout_constraintTop_toTopOf="@+id/two_mistakes_switch" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/appCompatTextView3"
@@ -234,7 +234,7 @@
                             app:layout_constraintBottom_toBottomOf="@+id/three_mistakes_switch"
                             app:layout_constraintEnd_toEndOf="@+id/appCompatTextView2"
                             app:layout_constraintStart_toStartOf="@+id/appCompatTextView2"
-                            app:layout_constraintTop_toBottomOf="@+id/two_mistakes_switch" />
+                            app:layout_constraintTop_toTopOf="@+id/three_mistakes_switch" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:layout_width="wrap_content"
@@ -246,7 +246,7 @@
                             app:layout_constraintBottom_toBottomOf="@+id/more_than_three_mistakes_switch"
                             app:layout_constraintEnd_toEndOf="@+id/appCompatTextView3"
                             app:layout_constraintStart_toStartOf="@+id/appCompatTextView3"
-                            app:layout_constraintTop_toBottomOf="@+id/three_mistakes_switch" />
+                            app:layout_constraintTop_toTopOf="@+id/more_than_three_mistakes_switch" />
 
                         <androidx.appcompat.widget.SwitchCompat
                             android:layout_marginTop="16dp"

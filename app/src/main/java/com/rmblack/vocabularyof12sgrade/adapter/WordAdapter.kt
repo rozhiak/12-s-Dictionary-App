@@ -42,7 +42,6 @@ class WordAdapter(private val wordList : ArrayList<Word>, private val reviewWord
         } else if (wordList[position].wordState == true) {
             holder.checkImg.setImageResource(R.drawable.green_check_logo)
             holder.questionImg.setImageResource(R.drawable.question_icon)
-
         } else if (wordList[position].wordState != true) {
             holder.checkImg.setImageResource(R.drawable.check_icon)
             holder.questionImg.setImageResource(R.drawable.orange_question_mark)
@@ -65,10 +64,14 @@ class WordAdapter(private val wordList : ArrayList<Word>, private val reviewWord
     ) {
         holder.questionCard.setOnClickListener {
             if (wordList[position].wordState == null) {
+                wordList[position].increaseWrongNum()
                 setQuestionIconWhenNull(holder, position)
             } else if (wordList[position].wordState == true) {
+                wordList[position].decreaseCorrectNum()
+                wordList[position].increaseWrongNum()
                 setQuestionIconWhenTrue(position, holder)
             } else if (wordList[position].wordState != true) {
+                wordList[position].decreaseWrongNum()
                 setQuestionIconWhenFalse(position, holder)
             }
         }
@@ -111,10 +114,14 @@ class WordAdapter(private val wordList : ArrayList<Word>, private val reviewWord
     ) {
         holder.checkCard.setOnClickListener {
             if (wordList[position].wordState == null) {
+                wordList[position].increaseCorrectNum()
                 setCheckIconWhenNull(holder, position)
             } else if (wordList[position].wordState == true) {
+                wordList[position].decreaseCorrectNum()
                 setCheckIconWhenTrue(position, holder)
             } else if (wordList[position].wordState != true) {
+                wordList[position].increaseCorrectNum()
+                wordList[position].decreaseWrongNum()
                 setCheckIconWhenFalse(position, holder)
             }
         }
@@ -158,17 +165,24 @@ class WordAdapter(private val wordList : ArrayList<Word>, private val reviewWord
         holder.showAnswerCard.setOnClickListener {
             word.answerVisibility = !word.answerVisibility
             if (word.answerVisibility) {
-                val size = holder.meaning.measuredHeight
-                resizeWordCard(holder, size + 110)
-                changeEyeIcon(true, holder)
+                show(holder)
             } else {
-                resizeWordCard(holder, 80)
-                holder.showAnswerImg.setImageResource(R.drawable.close_eye_icon)
-                holder.showAnswerImg.setBackgroundResource(R.color.white)
-                changeEyeIcon(false, holder)
-
+                hide(holder)
             }
         }
+    }
+
+    private fun hide(holder: WordVH) {
+        resizeWordCard(holder, 80)
+        holder.showAnswerImg.setImageResource(R.drawable.close_eye_icon)
+        holder.showAnswerImg.setBackgroundResource(R.color.white)
+        changeEyeIcon(false, holder)
+    }
+
+    private fun show(holder: WordVH) {
+        val size = holder.meaning.measuredHeight
+        resizeWordCard(holder, size + 110)
+        changeEyeIcon(true, holder)
     }
 
     private fun init(

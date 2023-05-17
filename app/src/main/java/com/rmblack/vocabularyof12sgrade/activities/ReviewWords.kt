@@ -32,10 +32,34 @@ class ReviewWords : AppCompatActivity() {
         setContentView(binding.root)
         window.navigationBarColor = ContextCompat.getColor(this, R.color.white)
         getIntentData()
-        initWords()
+        resetUIStatesToDefault()
+        initWords(savedInstanceState)
         setUpTransformer()
         initUIElements()
         configBTNs()
+    }
+
+    private fun resetUIStatesToDefault() {
+        for (w in tarLesson.wordsToReview!!) {
+            w.wordState = null
+            w.answerVisibility = false
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        val serializesArray = Json.encodeToString(tarLesson.wordsToReview)
+        outState.putString("words_to_review", serializesArray)
+        outState.putString("num_Of_mistakes", binding.numOfMistakes.text.toString())
+        outState.putString("num_Of_remaining", binding.numOfRemaining.text.toString())
+        outState.putString("num_Of_studied", binding.numOfStudied.text.toString())
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        binding.numOfMistakes.text = savedInstanceState.getString("num_Of_mistakes")
+        binding.numOfRemaining.text = savedInstanceState.getString("num_Of_remaining")
+        binding.numOfStudied.text = savedInstanceState.getString("num_Of_studied")
     }
 
     private fun configBTNs() {
@@ -43,9 +67,7 @@ class ReviewWords : AppCompatActivity() {
         binding.backBtn.setOnClickListener {
             finish()
         }
-
     }
-
     private fun configEndBtn() {
         binding.endBtn.setOnClickListener {
             finish()
@@ -54,12 +76,10 @@ class ReviewWords : AppCompatActivity() {
 
     private fun saveResToDB() {
         for (word in tarLesson.wordsToReview!!) {
-            if (word.wordState == false) {
-                tarLesson.increaseWordWrongNum(word)
-            } else if (word.wordState == true){
-                tarLesson.increaseWordCorrectNum(word)
-            }
+            val index = tarLesson.indexOf(word)
+            tarLesson.words?.set(index, word)
         }
+
         val sp = this.getSharedPreferences(DataBaseInfo.SP_NAME, MODE_PRIVATE)
         val editor = sp.edit()
         val serializesArray = Json.encodeToString(tarLesson.words)
@@ -117,13 +137,17 @@ class ReviewWords : AppCompatActivity() {
         wordsViewPager.setPageTransformer(transformer)
     }
 
-    private fun initWords() {
+    private fun initWords(savedInstanceState: Bundle?) {
         binding.wordsNum.text = PersianNum.convert(tarLesson.wordsToReview!!.size.toString())
-        initViewPager()
+        initViewPager(savedInstanceState)
     }
 
-    private fun initViewPager() {
+    private fun initViewPager(savedInstanceState: Bundle?) {
         wordsViewPager = findViewById(R.id.wordsViewPager)
+        if (savedInstanceState != null) {
+            tarLesson.wordsToReview = savedInstanceState.getString("words_to_review")
+                ?.let { Json.decodeFromString(it) }
+        }
         wordsAdapter = WordAdapter(tarLesson.wordsToReview!!, this)
         wordsViewPager.adapter = wordsAdapter
         wordsViewPager.offscreenPageLimit = 3
@@ -180,6 +204,7 @@ class ReviewWords : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-            saveResToDB()
+        saveResToDB()
     }
+
 }

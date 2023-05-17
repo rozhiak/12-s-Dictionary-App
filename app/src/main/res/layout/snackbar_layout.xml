@@ -15,6 +15,7 @@
         android:layout_height="wrap_content">
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:textDirection="rtl"
             android:layout_marginEnd="5dp"
             android:layout_gravity="end"
             android:textSize="14sp"

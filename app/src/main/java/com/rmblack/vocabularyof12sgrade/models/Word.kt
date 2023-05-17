@@ -11,6 +11,14 @@ data class Word(val id : String, val word : String, val meaning : String, var wr
         wrongNum++
     }
 
+    fun decreaseCorrectNum() {
+        correctNum--
+    }
+
+    fun decreaseWrongNum() {
+        wrongNum--
+    }
+
     fun isEqual(w1: Word): Boolean {
         if (w1.word != this.word) {
             return false
