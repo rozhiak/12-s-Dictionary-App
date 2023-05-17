@@ -1,5 +1,6 @@
 package com.rmblack.vocabularyof12sgrade.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -87,6 +88,7 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
 
         if (!oneMis && !twoMis && !threeMis && !threeAndMoreMis) {
             //Say to user that he/she should select number of mistakes.
+            makeSnack("حداقل باید یکی از گزینه های یک اشتباه ، دو اشتباه و... رو انتخاب کنید.")
         } else {
             holder.secondLoadingStartBtn.startAnimation()
             val tarPos = holder.bindingAdapterPosition
@@ -95,10 +97,10 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
                 val wordsToReview : ArrayList<Word> = ArrayList()
                 lessons[tarPos].words = words
                 collectWords(words, oneMis, wordsToReview, twoMis, threeMis, threeAndMoreMis)
-
                 if (wordsToReview.size == 0) {
                     holder.secondLoadingStartBtn.revertAnimation()
                     //Say to user the there is no word with repeated mistakes
+                    makeSnack("کلمه ای مطابق با تعداد اشتباهات یافت نشد.")
                 } else {
                     lessons[tarPos].wordsToReview = wordsToReview
                     holder.secondLoadingStartBtn.revertAnimation()
@@ -107,11 +109,12 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
             } else {
                 holder.secondLoadingStartBtn.revertAnimation()
                 //Say to user that he/she should review all words at least 1 time then review repeated mistake words.
-                makeSnack("سلام من به تو ای یار قدیمی")
+                makeSnack("برای مرور کلمات پر اشتباه ، حداقل یکبار باید مرورکلی درس را انجام داده باشید.")
             }
         }
     }
 
+    @SuppressLint("InflateParams")
     private fun makeSnack(text: String) {
         val snackBar = Snackbar.make(binding.root, "", Snackbar.LENGTH_SHORT)
         val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -290,11 +293,13 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
                 } else {
                     //server error
                     holder.firstLoadingStartBtn.revertAnimation()
+                    makeSnack("مشکلی در ارتبات با اینترنت پیش آمده ، از اتصال اینترنت خود مطمئن شوید.")
                 }
             }
-
             override fun onFailure(call: Call<ArrayList<URL>>, t: Throwable) {
                 holder.firstLoadingStartBtn.revertAnimation()
+                makeSnack("مشکلی در ارتبات با اینترنت پیش آمده ، از اتصال اینترنت خود مطمئن شوید.")
+
             }
         })
     }
@@ -321,16 +326,18 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
                     } else {
                         //server error
                         holder.firstLoadingStartBtn.revertAnimation()
+                        makeSnack("مشکلی در ارتبات با اینترنت پیش آمده ، از اتصال اینترنت خود مطمئن شوید.")
                     }
                 }
-
                 override fun onFailure(call: Call<ArrayList<Word>>, t: Throwable) {
                     holder.firstLoadingStartBtn.revertAnimation()
+                    makeSnack("مشکلی در ارتبات با اینترنت پیش آمده ، از اتصال اینترنت خود مطمئن شوید.")
                 }
             })
         } else {
             //A problem in server is occurred
             holder.firstLoadingStartBtn.revertAnimation()
+            makeSnack("مشکلی در سرور پیش آمده در حال رفع آن هستیم.")
         }
     }
 
