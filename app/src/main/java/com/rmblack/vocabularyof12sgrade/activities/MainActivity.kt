@@ -11,6 +11,9 @@ import com.rmblack.vocabularyof12sgrade.R
 import com.rmblack.vocabularyof12sgrade.adapter.LessonsRecAdapter
 import com.rmblack.vocabularyof12sgrade.databinding.ActivityMainBinding
 import com.rmblack.vocabularyof12sgrade.models.Lesson
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,50 +26,59 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         window.navigationBarColor = ContextCompat.getColor(this, R.color.teeth_white)
-        initializeLessons()
+        initializeLessons(savedInstanceState)
 //        getSharedPreferences(DataBaseInfo.SP_NAME, Context.MODE_PRIVATE).edit().clear().commit()
     }
 
-    private fun initializeLessons() {
-        //Declare lessons
-        val setayesh = Lesson("ستایش", "ملکا ذکر تو گویم", R.drawable.setayesh)
-        val lessonOne = Lesson("درس اول", "شکر نعمت", R.drawable.one)
-        val lessonTwo = Lesson("درس دوم", "مست و هشیار", R.drawable.two)
-        val lessonThree = Lesson("درس سوم", "آزادی", R.drawable.three)
-        val lessonFive = Lesson("درس پنجم", "دماوندیه", R.drawable.five)
-        val lessonSix = Lesson("درس ششم", "نی نامه", R.drawable.six)
-        val lessonSeven = Lesson("درس هفتم", "در حقیقت عشق", R.drawable.seven)
-        val lessonEight = Lesson("درس هشتم", "از پاریز تا پاریس", R.drawable.eight)
-        val lessonNine = Lesson("درس نهم", "کویر", R.drawable.nine)
-        val lessonTen = Lesson("درس دهم", "فصل شکوفایی", R.drawable.ten)
-        val lessonEleven = Lesson("درس یازدهم", "آن شب عزیز", R.drawable.eleven)
-        val lessonTwelve = Lesson("درس دوازدهم", "گذر سیاوش از آتش", R.drawable.twelve)
-        val lessonThirteen = Lesson("درس سیزدهم", "خوان هشتم", R.drawable.thirteen)
-        val lessonFourteen = Lesson("درس چهاردهم", "سی مرغ و سیمرغ", R.drawable.fourteen)
-        val lessonSixteen = Lesson("درس شانزدهم", "کباب غاز", R.drawable.sixteen)
-        val lessonSeventeen = Lesson("درس هفدهم", "خنده تو", R.drawable.seventeen)
-        val niyayesh = Lesson("نیایش ", "لطف تو", R.drawable.niyayesh)
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("lessons", Json.encodeToString(lessons))
+    }
 
-        lessons = arrayListOf(
-            setayesh,
-            lessonOne,
-            lessonTwo,
-            lessonThree,
-            lessonFive,
-            lessonSix,
-            lessonSeven,
-            lessonEight,
-            lessonNine,
-            lessonTen,
-            lessonEleven,
-            lessonTwelve,
-            lessonThirteen,
-            lessonFourteen,
-            lessonSixteen,
-            lessonSeventeen,
-            niyayesh
-        )
+    private fun initializeLessons(savedInstanceState: Bundle?) {
+        if (savedInstanceState == null) {
+            //Declare lessons
+            val setayesh = Lesson("ستایش", "ملکا ذکر تو گویم", R.drawable.setayesh)
+            val lessonOne = Lesson("درس اول", "شکر نعمت", R.drawable.one)
+            val lessonTwo = Lesson("درس دوم", "مست و هشیار", R.drawable.two)
+            val lessonThree = Lesson("درس سوم", "آزادی", R.drawable.three)
+            val lessonFive = Lesson("درس پنجم", "دماوندیه", R.drawable.five)
+            val lessonSix = Lesson("درس ششم", "نی نامه", R.drawable.six)
+            val lessonSeven = Lesson("درس هفتم", "در حقیقت عشق", R.drawable.seven)
+            val lessonEight = Lesson("درس هشتم", "از پاریز تا پاریس", R.drawable.eight)
+            val lessonNine = Lesson("درس نهم", "کویر", R.drawable.nine)
+            val lessonTen = Lesson("درس دهم", "فصل شکوفایی", R.drawable.ten)
+            val lessonEleven = Lesson("درس یازدهم", "آن شب عزیز", R.drawable.eleven)
+            val lessonTwelve = Lesson("درس دوازدهم", "گذر سیاوش از آتش", R.drawable.twelve)
+            val lessonThirteen = Lesson("درس سیزدهم", "خوان هشتم", R.drawable.thirteen)
+            val lessonFourteen = Lesson("درس چهاردهم", "سی مرغ و سیمرغ", R.drawable.fourteen)
+            val lessonSixteen = Lesson("درس شانزدهم", "کباب غاز", R.drawable.sixteen)
+            val lessonSeventeen = Lesson("درس هفدهم", "خنده تو", R.drawable.seventeen)
+            val niyayesh = Lesson("نیایش ", "لطف تو", R.drawable.niyayesh)
 
+            lessons = arrayListOf(
+                setayesh,
+                lessonOne,
+                lessonTwo,
+                lessonThree,
+                lessonFive,
+                lessonSix,
+                lessonSeven,
+                lessonEight,
+                lessonNine,
+                lessonTen,
+                lessonEleven,
+                lessonTwelve,
+                lessonThirteen,
+                lessonFourteen,
+                lessonSixteen,
+                lessonSeventeen,
+                niyayesh
+            )
+        } else {
+            val serializedLessons = savedInstanceState.getString("lessons")
+            lessons = Json.decodeFromString(serializedLessons.toString())
+        }
         configLessonsRec(lessons)
     }
 
@@ -77,15 +89,4 @@ class MainActivity : AppCompatActivity() {
         rvLessons.layoutManager = LinearLayoutManager(this)
 
     }
-
-    override fun onPause() {
-        //use saved state here
-        super.onPause()
-        for (i in 0 until lessons.size) {
-            if (lessons[i].visibility) {
-                println(i)
-            }
-        }
-    }
-
 }

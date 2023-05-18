@@ -1,5 +1,7 @@
 package com.rmblack.vocabularyof12sgrade.adapter
 
+import android.graphics.text.LineBreaker
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -216,6 +218,9 @@ class WordAdapter(private val wordList : ArrayList<Word>,
         holder.word.text = wordList[position].word
         holder.meaning.text = wordList[position].meaning
         holder.meaning.bringToFront()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            holder.meaning.justificationMode = LineBreaker.JUSTIFICATION_MODE_INTER_WORD
+        }
     }
 
     fun changeEyeIcon(open: Boolean, holder: WordVH) {

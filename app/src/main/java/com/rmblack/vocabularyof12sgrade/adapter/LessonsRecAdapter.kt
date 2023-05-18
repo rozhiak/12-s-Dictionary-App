@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -264,8 +263,6 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
     private fun getAndFetchDataToLesson(holder: ViewHolder) {
         val wordList: java.util.ArrayList<Word> =
             getWordsFromDB(holder.bindingAdapterPosition)
-        Log.e("", wordList.toString())
-
         if (lessons[holder.bindingAdapterPosition].words == null) {
             lessons[holder.bindingAdapterPosition].words = wordList
         }
