@@ -85,7 +85,6 @@ class ReviewWords : AppCompatActivity() {
             val index = tarLesson.indexOf(word)
             tarLesson.words?.set(index, word)
         }
-
         val sp = this.getSharedPreferences(DataBaseInfo.SP_NAME, MODE_PRIVATE)
         val editor = sp.edit()
         val serializesArray = Json.encodeToString(tarLesson.words)
@@ -211,9 +210,8 @@ class ReviewWords : AppCompatActivity() {
         words[position].answerVisibility = !words[position].answerVisibility
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onPause() {
+        super.onPause()
         saveResToDB()
     }
-
 }
