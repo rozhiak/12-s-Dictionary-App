@@ -8,16 +8,4 @@ data class Lesson(val number: String,
                   var firstSwitch: Boolean = false,
                   var secondSwitch: Boolean  = false,
                   var thirdSwitch: Boolean  = false,
-                  var forthSwitch: Boolean  = false) {
-    var words : ArrayList<Word>? = null
-    var wordsToReview : ArrayList<Word>? = null
-
-    fun indexOf(word: Word): Int {
-        for (w in words!!) {
-            if(w.isEqual(word)) {
-                return words!!.indexOf(w)
-            }
-        }
-        return -1
-    }
-}
+                  var forthSwitch: Boolean  = false)

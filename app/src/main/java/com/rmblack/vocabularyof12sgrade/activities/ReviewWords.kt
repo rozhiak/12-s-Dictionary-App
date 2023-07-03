@@ -1,5 +1,6 @@
 package com.rmblack.vocabularyof12sgrade.activities
 
+import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -10,7 +11,8 @@ import androidx.viewpager2.widget.ViewPager2
 import com.rmblack.vocabularyof12sgrade.R
 import com.rmblack.vocabularyof12sgrade.adapter.WordAdapter
 import com.rmblack.vocabularyof12sgrade.databinding.ActivityReviewWordsBinding
-import com.rmblack.vocabularyof12sgrade.models.Lesson
+import com.rmblack.vocabularyof12sgrade.models.ReviewIntentDataPack
+import com.rmblack.vocabularyof12sgrade.models.ReviewType
 import com.rmblack.vocabularyof12sgrade.models.Word
 import com.rmblack.vocabularyof12sgrade.utils.DataBaseInfo
 import com.rmblack.vocabularyof12sgrade.utils.PersianNum
@@ -24,7 +26,10 @@ class ReviewWords : AppCompatActivity() {
     private lateinit var binding: ActivityReviewWordsBinding
     private lateinit var wordsViewPager: ViewPager2
     private lateinit var wordsAdapter: WordAdapter
-    private lateinit var tarLesson : Lesson
+    private lateinit var title: String
+    private lateinit var wordsToReview : ArrayList<Word>
+    private lateinit var words : ArrayList<Word>
+    private lateinit var dataPack: ReviewIntentDataPack
     private var curPos: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,12 +41,12 @@ class ReviewWords : AppCompatActivity() {
         resetUIStatesToDefault()
         initWords(savedInstanceState)
         setUpTransformer()
-        initUIElements()
+        initGeneralUI()
         configBTNs()
     }
 
     private fun resetUIStatesToDefault() {
-        for (w in tarLesson.wordsToReview!!) {
+        for (w in wordsToReview) {
             w.wordState = null
             w.answerVisibility = false
         }
@@ -49,7 +54,7 @@ class ReviewWords : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        val serializesArray = Json.encodeToString(tarLesson.wordsToReview)
+        val serializesArray = Json.encodeToString(wordsToReview)
         outState.putString("words_to_review", serializesArray)
         outState.putString("num_Of_mistakes", binding.numOfMistakes.text.toString())
         outState.putString("num_Of_remaining", binding.numOfRemaining.text.toString())
@@ -70,10 +75,15 @@ class ReviewWords : AppCompatActivity() {
 
     private fun configBTNs() {
         configEndBtn()
+        configBackBtn()
+    }
+
+    private fun configBackBtn() {
         binding.backBtn.setOnClickListener {
             finish()
         }
     }
+
     private fun configEndBtn() {
         binding.endBtn.setOnClickListener {
             finish()
@@ -81,19 +91,15 @@ class ReviewWords : AppCompatActivity() {
     }
 
     private fun saveResToDB() {
-        for (word in tarLesson.wordsToReview!!) {
-            val index = tarLesson.indexOf(word)
-            tarLesson.words?.set(index, word)
-        }
         val sp = this.getSharedPreferences(DataBaseInfo.SP_NAME, MODE_PRIVATE)
         val editor = sp.edit()
-        val serializesArray = Json.encodeToString(tarLesson.words)
-        editor.putString(tarLesson.title, serializesArray)
+        val serializesArray = Json.encodeToString(words)
+        editor.putString(title, serializesArray)
         editor.apply()
     }
 
-    private fun initUIElements() {
-        binding.lessonTitle.text = tarLesson.title
+    private fun initGeneralUI() {
+        binding.lessonTitle.text = title
         binding.numOfMistakes.text = PersianNum.convert("0")
         binding.numOfStudied.text = PersianNum.convert("0")
         binding.numOfRemaining.text = PersianNum.convert(wordsAdapter.itemCount.toString())
@@ -143,28 +149,66 @@ class ReviewWords : AppCompatActivity() {
     }
 
     private fun initWords(savedInstanceState: Bundle?) {
-        binding.wordsNum.text = PersianNum.convert(tarLesson.wordsToReview!!.size.toString())
         initViewPager(savedInstanceState)
+        binding.wordsNum.text = PersianNum.convert(wordsToReview.size.toString())
     }
 
     private fun initViewPager(savedInstanceState: Bundle?) {
         wordsViewPager = findViewById(R.id.wordsViewPager)
         if (savedInstanceState != null) {
-            tarLesson.wordsToReview = savedInstanceState.getString("words_to_review")
-                ?.let { Json.decodeFromString(it) }
+            wordsToReview = savedInstanceState.getString("words_to_review")
+                ?.let { Json.decodeFromString(it) }!!
         }
-        wordsAdapter = WordAdapter(tarLesson.wordsToReview!!, this, savedInstanceState)
+        wordsAdapter = WordAdapter(wordsToReview, this, savedInstanceState)
         wordsViewPager.adapter = wordsAdapter
         wordsViewPager.offscreenPageLimit = 3
         wordsViewPager.clipToPadding = false
         wordsViewPager.clipChildren = false
         wordsViewPager.getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
-        handleWordCardWhenSwiping(tarLesson.wordsToReview!!)
+        handleWordCardWhenSwiping(wordsToReview)
     }
 
     private fun getIntentData() {
-        val serializedLesson = intent.getStringExtra(DataBaseInfo.BUNDLE_LESSON).toString()
-        tarLesson = Json.decodeFromString(serializedLesson)
+        val serializedDataPack = intent.getStringExtra(DataBaseInfo.BUNDLE_REVIEW_DATA_PACK).toString()
+        dataPack = Json.decodeFromString(serializedDataPack)
+        title = dataPack.title
+        words = getWordsFromDB(dataPack.title)
+        if (dataPack.reviewType == ReviewType.REVIEW_ALL) {
+            wordsToReview = words
+        } else {
+            wordsToReview = ArrayList()
+            collectWords(words, dataPack.oneM!!, dataPack.twoM!!, dataPack.threeM!!, dataPack.moreM!!)
+        }
+    }
+
+    private fun getWordsFromDB(title: String): java.util.ArrayList<Word> {
+        val sp = this.getSharedPreferences(DataBaseInfo.SP_NAME, Context.MODE_PRIVATE)
+        return Json.decodeFromString(
+            sp.getString(title, "").toString()
+        )
+    }
+
+    private fun collectWords(
+        words: java.util.ArrayList<Word>,
+        oneMis: Boolean,
+        twoMis: Boolean,
+        threeMis: Boolean,
+        threeAndMoreMis: Boolean
+    ) {
+        for (w in words) {
+            if (oneMis && w.wrongNum == 1) {
+                wordsToReview.add(w)
+            }
+            if (twoMis && w.wrongNum == 2) {
+                wordsToReview.add(w)
+            }
+            if (threeMis && w.wrongNum == 3) {
+                wordsToReview.add(w)
+            }
+            if (threeAndMoreMis && w.wrongNum > 3) {
+                wordsToReview.add(w)
+            }
+        }
     }
 
     private fun handleWordCardWhenSwiping(words: ArrayList<Word>) {

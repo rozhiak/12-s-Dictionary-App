@@ -19,9 +19,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.rmblack.vocabularyof12sgrade.R
 import com.rmblack.vocabularyof12sgrade.activities.ReviewWords
 import com.rmblack.vocabularyof12sgrade.databinding.ActivityMainBinding
-import com.rmblack.vocabularyof12sgrade.models.Lesson
-import com.rmblack.vocabularyof12sgrade.models.URL
-import com.rmblack.vocabularyof12sgrade.models.Word
+import com.rmblack.vocabularyof12sgrade.models.*
 import com.rmblack.vocabularyof12sgrade.server.IService
 import com.rmblack.vocabularyof12sgrade.server.RetrofitHelper
 import com.rmblack.vocabularyof12sgrade.utils.DataBaseInfo
@@ -35,7 +33,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: Context, private val binding: ActivityMainBinding) : RecyclerView.Adapter<LessonsRecAdapter.ViewHolder>() {
+class LessonsRecAdapter(private val lessons: List<Lesson>,
+                        private val context: Context,
+                        private val binding: ActivityMainBinding) : RecyclerView.Adapter<LessonsRecAdapter.ViewHolder>() {
 
     private lateinit var recyclerView : RecyclerView
     private val sp = context.getSharedPreferences(DataBaseInfo.SP_NAME, Context.MODE_PRIVATE)
@@ -72,7 +72,7 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
         setEachLesson(position, holder)
         holder.firstLoadingStartBtn.setOnClickListener {
             holder.firstLoadingStartBtn.startAnimation()
-            reviewWords(holder)
+            reviewAllWords(holder)
         }
         holder.secondLoadingStartBtn.setOnClickListener {
             reviewRepeatedMistakeWords(holder)
@@ -93,24 +93,52 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
             val tarPos = holder.bindingAdapterPosition
             if (sp.contains(lessons[tarPos].title)) {
                 val words = getWordsFromDB(tarPos)
-                val wordsToReview : ArrayList<Word> = ArrayList()
-                lessons[tarPos].words = words
-                collectWords(words, oneMis, wordsToReview, twoMis, threeMis, threeAndMoreMis)
-                if (wordsToReview.size == 0) {
+                val anyMistake : Boolean = anyMistake(words, oneMis, twoMis, threeMis, threeAndMoreMis)
+                if (anyMistake) {
+                    val intentDataPack = ReviewIntentDataPack(lessons[tarPos].title,
+                        ReviewType.REVIEW_MISTAKES,
+                        oneMis, twoMis, threeMis, threeAndMoreMis)
+                    val serializedDataPack = Json.encodeToString(intentDataPack)
+                    val intent = Intent(context, ReviewWords::class.java)
+                    intent.putExtra(DataBaseInfo.BUNDLE_REVIEW_DATA_PACK, serializedDataPack)
+                    holder.secondLoadingStartBtn.revertAnimation()
+                    context.startActivity(intent)
+                } else {
                     holder.secondLoadingStartBtn.revertAnimation()
                     //Say to user the there is no word with repeated mistakes
-                    makeSnack("کلمه ای مطابق با تعداد اشتباهات یافت نشد.")
-                } else {
-                    lessons[tarPos].wordsToReview = wordsToReview
-                    holder.secondLoadingStartBtn.revertAnimation()
-                    startReviewActivity(holder)
+                    makeSnack("کلمه ای مطابق با تعداد اشتباهات مشخص شده یافت نشد.")
                 }
+
             } else {
                 holder.secondLoadingStartBtn.revertAnimation()
                 //Say to user that he/she should review all words at least 1 time then review repeated mistake words.
                 makeSnack("برای مرور کلمات پر اشتباه ، حداقل یکبار باید مرورکلی درس را انجام داده باشید.")
             }
         }
+    }
+
+    private fun anyMistake(
+        words: java.util.ArrayList<Word>,
+        oneMis: Boolean,
+        twoMis: Boolean,
+        threeMis: Boolean,
+        threeAndMoreMis: Boolean
+    ) : Boolean {
+        for (w in words) {
+            if (oneMis && w.wrongNum == 1) {
+                return true
+            }
+            if (twoMis && w.wrongNum == 2) {
+                return true
+            }
+            if (threeMis && w.wrongNum == 3) {
+                return true
+            }
+            if (threeAndMoreMis && w.wrongNum > 3) {
+                return true
+            }
+        }
+        return false
     }
 
     @SuppressLint("InflateParams")
@@ -128,30 +156,6 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
         snackBar.show()
     }
 
-    private fun collectWords(
-        words: java.util.ArrayList<Word>,
-        oneMis: Boolean,
-        wordsToReview: ArrayList<Word>,
-        twoMis: Boolean,
-        threeMis: Boolean,
-        threeAndMoreMis: Boolean
-    ) {
-        for (w in words) {
-            if (oneMis && w.wrongNum == 1) {
-                wordsToReview.add(w)
-            }
-            if (twoMis && w.wrongNum == 2) {
-                wordsToReview.add(w)
-            }
-            if (threeMis && w.wrongNum == 3) {
-                wordsToReview.add(w)
-            }
-            if (threeAndMoreMis && w.wrongNum > 3) {
-                wordsToReview.add(w)
-            }
-        }
-    }
-
     private fun setEachLesson(
         position: Int,
         holder: ViewHolder
@@ -159,10 +163,10 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
         val lesson: Lesson = lessonClick(position, holder)
         lessonVisibility(lesson, holder)
         lessonInfo(holder, lesson)
-        saveSwitchesState(holder)
+        setSwitchesPressEvent(holder)
     }
 
-    private fun saveSwitchesState(
+    private fun setSwitchesPressEvent(
         holder: ViewHolder
     ) {
         val lesson = lessons[holder.absoluteAdapterPosition]
@@ -252,23 +256,21 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
         holder.moreThanThreeMistakesSwitch.isChecked = lessons[holder.bindingAdapterPosition].forthSwitch
     }
 
-    private fun reviewWords(holder: ViewHolder) {
+    private fun reviewAllWords(holder: ViewHolder) {
         if (sp.contains(lessons[holder.bindingAdapterPosition].title)) {
-            getAndFetchDataToLesson(holder)
+            //getAndFetchDataToLesson(holder)
+            val intentDataPack =
+                ReviewIntentDataPack(lessons[holder.bindingAdapterPosition].title,
+                ReviewType.REVIEW_ALL,
+                null, null, null, null)
+            val serializedDataPack = Json.encodeToString(intentDataPack)
+            val intent = Intent(context, ReviewWords::class.java)
+            intent.putExtra(DataBaseInfo.BUNDLE_REVIEW_DATA_PACK, serializedDataPack)
+            holder.firstLoadingStartBtn.revertAnimation()
+            context.startActivity(intent)
         } else {
             getDestinations(holder)
         }
-    }
-
-    private fun getAndFetchDataToLesson(holder: ViewHolder) {
-        val wordList: java.util.ArrayList<Word> =
-            getWordsFromDB(holder.bindingAdapterPosition)
-        if (lessons[holder.bindingAdapterPosition].words == null) {
-            lessons[holder.bindingAdapterPosition].words = wordList
-        }
-        lessons[holder.bindingAdapterPosition].wordsToReview = wordList
-        holder.firstLoadingStartBtn.revertAnimation()
-        startReviewActivity(holder)
     }
 
     private fun getWordsFromDB(tarPos: Int): java.util.ArrayList<Word> {
@@ -296,7 +298,6 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
             override fun onFailure(call: Call<ArrayList<URL>>, t: Throwable) {
                 holder.firstLoadingStartBtn.revertAnimation()
                 makeSnack("مشکلی در ارتبات با اینترنت پیش آمده ، از اتصال اینترنت خود مطمئن شوید.")
-
             }
         })
     }
@@ -317,9 +318,15 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
                 ) {
                     if (response.code() == 200 && response.isSuccessful && response.body() != null) {
                         saveWordsToDB(response, holder.bindingAdapterPosition)
-                        saveWordsToLesson(holder.bindingAdapterPosition, response)
+                        val intentDataPack =
+                            ReviewIntentDataPack(lessons[holder.bindingAdapterPosition].title,
+                                ReviewType.REVIEW_ALL,
+                                null, null, null, null)
+                        val serializedDataPack = Json.encodeToString(intentDataPack)
+                        val intent = Intent(context, ReviewWords::class.java)
+                        intent.putExtra(DataBaseInfo.BUNDLE_REVIEW_DATA_PACK, serializedDataPack)
                         holder.firstLoadingStartBtn.revertAnimation()
-                        startReviewActivity(holder)
+                        context.startActivity(intent)
                     } else {
                         //server error
                         holder.firstLoadingStartBtn.revertAnimation()
@@ -338,28 +345,13 @@ class LessonsRecAdapter(private val lessons: List<Lesson>, private val context: 
         }
     }
 
-    private fun saveWordsToLesson(
-        tarPos: Int,
-        response: Response<ArrayList<Word>>
-    ) {
-        lessons[tarPos].words = response.body()
-        lessons[tarPos].wordsToReview = response.body()
-    }
-
-    private fun startReviewActivity(holder: ViewHolder) {
-        val serializesLesson = Json.encodeToString(lessons[holder.bindingAdapterPosition])
-        val intent = Intent(context, ReviewWords::class.java)
-        intent.putExtra(DataBaseInfo.BUNDLE_LESSON, serializesLesson)
-        context.startActivity(intent)
-    }
-
     private fun saveWordsToDB(
         response: Response<ArrayList<Word>>,
         tarPos: Int
     ) {
         val editor = sp.edit()
-        val serializesArray = Json.encodeToString(response.body())
-        editor.putString(lessons[tarPos].title, serializesArray)
+        val serializedArray = Json.encodeToString(response.body())
+        editor.putString(lessons[tarPos].title, serializedArray)
         editor.apply()
     }
 
