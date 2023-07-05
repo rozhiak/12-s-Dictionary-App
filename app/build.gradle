@@ -59,4 +59,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1'
     //Progressing button
     implementation 'br.com.simplepass:loading-button-android:2.2.0'
+    //View Model
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
+    implementation 'androidx.activity:activity-ktx:1.7.2'
 }
