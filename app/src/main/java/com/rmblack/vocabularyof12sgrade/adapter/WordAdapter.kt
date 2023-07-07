@@ -196,6 +196,14 @@ class WordAdapter(private val wordList : ArrayList<Word>,
                 hide(holder)
             }
         }
+        holder.answerCard.setOnClickListener {
+            word.answerVisibility = !word.answerVisibility
+            if (word.answerVisibility) {
+                show(holder)
+            } else {
+                hide(holder)
+            }
+        }
     }
 
     private fun hide(holder: WordVH) {
@@ -262,5 +270,7 @@ class WordAdapter(private val wordList : ArrayList<Word>,
         val questionImg : AppCompatImageView = itemView.findViewById(R.id.cross_img)
         val checkCard : CardView = itemView.findViewById(R.id.check_card)
         val questionCard : CardView = itemView.findViewById(R.id.question_card)
+        val answerCard : CardView = itemView.findViewById(R.id.answer_card)
+
     }
 }
