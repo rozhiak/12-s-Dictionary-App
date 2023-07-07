@@ -63,14 +63,14 @@ class WordAdapter(private val wordList : ArrayList<Word>,
         }
         if (wordList[position].wordState == null) {
             holder.checkImg.setImageResource(R.drawable.check_icon)
-            holder.questionImg.setImageResource(R.drawable.question_icon)
+            holder.questionImg.setImageResource(R.drawable.cross_icon)
         } else if (wordList[position].wordState == true) {
             holder.checkImg.setImageResource(R.drawable.green_check_logo)
-            holder.questionImg.setImageResource(R.drawable.question_icon)
+            holder.questionImg.setImageResource(R.drawable.cross_icon)
 
         } else if (wordList[position].wordState != true) {
             holder.checkImg.setImageResource(R.drawable.check_icon)
-            holder.questionImg.setImageResource(R.drawable.orange_question_mark)
+            holder.questionImg.setImageResource(R.drawable.orange_cross_icon)
         }
     }
 
@@ -108,7 +108,7 @@ class WordAdapter(private val wordList : ArrayList<Word>,
         holder: WordVH
     ) {
         wordList[position].wordState = null
-        holder.questionImg.setImageResource(R.drawable.question_icon)
+        holder.questionImg.setImageResource(R.drawable.cross_icon)
         reviewWords.changeNumOfMistakes(false)
         reviewWords.changeNumOfRemaining(true)
     }
@@ -118,7 +118,7 @@ class WordAdapter(private val wordList : ArrayList<Word>,
         holder: WordVH
     ) {
         wordList[position].wordState = !wordList[position].wordState!!
-        holder.questionImg.setImageResource(R.drawable.orange_question_mark)
+        holder.questionImg.setImageResource(R.drawable.orange_cross_icon)
         holder.checkImg.setImageResource(R.drawable.check_icon)
         reviewWords.changeNumOfMistakes(true)
         reviewWords.changeNumOfStudied(false)
@@ -128,7 +128,7 @@ class WordAdapter(private val wordList : ArrayList<Word>,
         holder: WordVH,
         position: Int
     ) {
-        holder.questionImg.setImageResource(R.drawable.orange_question_mark)
+        holder.questionImg.setImageResource(R.drawable.orange_cross_icon)
         wordList[position].wordState = false
         reviewWords.changeNumOfMistakes(true)
         reviewWords.changeNumOfRemaining(false)
@@ -159,7 +159,7 @@ class WordAdapter(private val wordList : ArrayList<Word>,
     ) {
         wordList[position].wordState = !wordList[position].wordState!!
         holder.checkImg.setImageResource(R.drawable.green_check_logo)
-        holder.questionImg.setImageResource(R.drawable.question_icon)
+        holder.questionImg.setImageResource(R.drawable.cross_icon)
         reviewWords.changeNumOfMistakes(false)
         reviewWords.changeNumOfStudied(true)
     }
@@ -259,7 +259,7 @@ class WordAdapter(private val wordList : ArrayList<Word>,
         val showAnswerCard : CardView = itemView.findViewById(R.id.show_answer_card)
         val showAnswerImg : AppCompatImageView = itemView.findViewById(R.id.show_answer_img)
         val checkImg : AppCompatImageView = itemView.findViewById(R.id.check_img)
-        val questionImg : AppCompatImageView = itemView.findViewById(R.id.question_img)
+        val questionImg : AppCompatImageView = itemView.findViewById(R.id.cross_img)
         val checkCard : CardView = itemView.findViewById(R.id.check_card)
         val questionCard : CardView = itemView.findViewById(R.id.question_card)
     }

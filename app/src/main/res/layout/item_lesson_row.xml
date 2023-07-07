@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
+    android:layoutDirection="ltr"
     android:layout_margin="8dp"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/lesson_constraint"
@@ -125,14 +126,16 @@
                                 android:id="@+id/first_loading_start_btn"
                                 android:backgroundTint="@color/appGreen"
                                 android:layout_width="wrap_content"
-                                android:layout_height="37dp"
+                                android:layout_height="match_parent"
                                 android:textStyle="bold"
-                                android:textSize="16sp"
+                                android:textSize="17sp"
+                                android:layout_marginTop="-5dp"
+                                android:paddingBottom="0dp"
                                 android:fontFamily="@font/iransans"
                                 android:text="@string/start"
                                 app:spinning_bar_color="@color/white"
                                 android:textColor="@color/selected_card"
-                                android:textAlignment="gravity" />
+                                android:textAlignment="center" />
 
                         </androidx.cardview.widget.CardView>
 
@@ -177,7 +180,7 @@
                         <androidx.cardview.widget.CardView
                             android:id="@+id/secondStartCardView"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="37dp"
                             android:layout_marginStart="16dp"
                             android:layout_marginTop="8dp"
                             android:backgroundTint="@color/orange"
@@ -189,11 +192,13 @@
                                 app:spinning_bar_color="@color/selected_card"
                                 android:id="@+id/second_loading_start_btn"
                                 android:layout_width="wrap_content"
-                                android:layout_height="37dp"
+                                android:layout_height="match_parent"
                                 android:text="@string/start"
-                                android:textSize="16sp"
+                                android:layout_marginTop="-5dp"
+                                android:paddingBottom="0dp"                                android:textSize="17sp"
                                 android:fontFamily="@font/iransans"
                                 android:textStyle="bold"
+                                android:textAlignment="center"
                                 android:backgroundTint="@color/orange"
                                 android:textColor="@color/white"/>
 
@@ -201,7 +206,7 @@
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:textAlignment="center"
-                            android:id="@+id/appCompatTextView"
+                            android:id="@+id/one_mis_tv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/one_time_mistake"
@@ -213,27 +218,27 @@
                             app:layout_constraintTop_toTopOf="@+id/one_mistake_switch" />
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/appCompatTextView2"
+                            android:id="@+id/two_mis_tv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/two_times_mistake"
                             android:textColor="@color/orange"
                             android:textSize="18sp"
                             app:layout_constraintBottom_toBottomOf="@+id/two_mistakes_switch"
-                            app:layout_constraintEnd_toEndOf="@+id/appCompatTextView"
-                            app:layout_constraintStart_toStartOf="@+id/appCompatTextView"
+                            app:layout_constraintEnd_toEndOf="@+id/one_mis_tv"
+                            app:layout_constraintStart_toStartOf="@+id/one_mis_tv"
                             app:layout_constraintTop_toTopOf="@+id/two_mistakes_switch" />
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/appCompatTextView3"
+                            android:id="@+id/three_mis_tv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/three_times_mistake"
                             android:textColor="@color/orange"
                             android:textSize="18sp"
                             app:layout_constraintBottom_toBottomOf="@+id/three_mistakes_switch"
-                            app:layout_constraintEnd_toEndOf="@+id/appCompatTextView2"
-                            app:layout_constraintStart_toStartOf="@+id/appCompatTextView2"
+                            app:layout_constraintEnd_toEndOf="@+id/two_mis_tv"
+                            app:layout_constraintStart_toStartOf="@+id/two_mis_tv"
                             app:layout_constraintTop_toTopOf="@+id/three_mistakes_switch" />
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -243,9 +248,10 @@
                             android:text="@string/more_than_three_times_mistake"
                             android:textColor="@color/orange"
                             android:textSize="18sp"
+                            android:id="@+id/more_three_mis_tv"
                             app:layout_constraintBottom_toBottomOf="@+id/more_than_three_mistakes_switch"
-                            app:layout_constraintEnd_toEndOf="@+id/appCompatTextView3"
-                            app:layout_constraintStart_toStartOf="@+id/appCompatTextView3"
+                            app:layout_constraintEnd_toEndOf="@+id/three_mis_tv"
+                            app:layout_constraintStart_toStartOf="@+id/three_mis_tv"
                             app:layout_constraintTop_toTopOf="@+id/more_than_three_mistakes_switch" />
 
                         <androidx.appcompat.widget.SwitchCompat

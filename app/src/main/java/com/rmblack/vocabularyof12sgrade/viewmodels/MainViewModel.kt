@@ -38,6 +38,7 @@ class MainViewModel : ViewModel() {
         val lessonFourteen = Lesson("درس چهاردهم", "سی مرغ و سیمرغ", R.drawable.fourteen)
         val lessonSixteen = Lesson("درس شانزدهم", "کباب غاز", R.drawable.sixteen)
         val lessonSeventeen = Lesson("درس هفدهم", "خنده تو", R.drawable.seventeen)
+        val lessonEighteen = Lesson("درس هجدهم", "عشق جاودانی", R.drawable.eighteen)
         val niyayesh = Lesson("نیایش ", "لطف تو", R.drawable.niyayesh)
 
         lessons = arrayListOf(
@@ -57,6 +58,7 @@ class MainViewModel : ViewModel() {
             lessonFourteen,
             lessonSixteen,
             lessonSeventeen,
+            lessonEighteen,
             niyayesh
         )
     }

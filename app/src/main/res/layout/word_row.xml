@@ -148,11 +148,11 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/question_img"
-            android:layout_width="58dp"
-            android:layout_height="62dp"
+            android:id="@+id/cross_img"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:padding="10dp"
-            app:srcCompat="@drawable/question_icon" />
+            app:srcCompat="@drawable/cross_icon" />
 
     </androidx.cardview.widget.CardView>
 

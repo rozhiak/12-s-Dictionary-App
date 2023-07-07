@@ -58,6 +58,10 @@ class LessonsRecAdapter(private val lessons: List<Lesson>,
         val moreThanThreeMistakesSwitch : SwitchCompat = itemView.findViewById(R.id.more_than_three_mistakes_switch)
         val firstLoadingStartBtn: CircularProgressButton = itemView.findViewById(R.id.first_loading_start_btn)
         val secondLoadingStartBtn: CircularProgressButton = itemView.findViewById(R.id.second_loading_start_btn)
+        val oneMisTv: AppCompatTextView = itemView.findViewById(R.id.one_mis_tv)
+        val twoMisTv: AppCompatTextView = itemView.findViewById(R.id.two_mis_tv)
+        val threeMisTv: AppCompatTextView = itemView.findViewById(R.id.three_mis_tv)
+        val moreThreeMisTv: AppCompatTextView = itemView.findViewById(R.id.more_three_mis_tv)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -189,6 +193,18 @@ class LessonsRecAdapter(private val lessons: List<Lesson>,
             if (compoundButton.isPressed) {
                 lesson.forthSwitch = holder.moreThanThreeMistakesSwitch.isChecked
             }
+        }
+        holder.oneMisTv.setOnClickListener {
+            holder.oneMistakeSwitch.isChecked = !holder.oneMistakeSwitch.isChecked
+        }
+        holder.twoMisTv.setOnClickListener {
+            holder.twoMistakeSwitch.isChecked = !holder.twoMistakeSwitch.isChecked
+        }
+        holder.threeMisTv.setOnClickListener {
+            holder.threeMistakeSwitch.isChecked = !holder.threeMistakeSwitch.isChecked
+        }
+        holder.moreThreeMisTv.setOnClickListener {
+            holder.moreThanThreeMistakesSwitch.isChecked = !holder.moreThanThreeMistakesSwitch.isChecked
         }
     }
 
