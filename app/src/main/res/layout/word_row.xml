@@ -65,7 +65,7 @@
                 android:layout_height="match_parent">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:lineSpacingExtra="3dp"
+                    android:lineSpacingExtra="6dp"
                     android:textDirection="rtl"
                     android:textStyle="normal"
                     android:textAlignment="textStart"

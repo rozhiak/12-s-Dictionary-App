@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -285,7 +286,8 @@ class LessonsRecAdapter(private val lessons: List<Lesson>,
             holder.firstLoadingStartBtn.revertAnimation()
             context.startActivity(intent)
         } else {
-            getDestinations(holder)
+            val position = holder.bindingAdapterPosition
+            getDestinations(holder, position)
         }
     }
 
@@ -295,7 +297,7 @@ class LessonsRecAdapter(private val lessons: List<Lesson>,
         )
     }
 
-    private fun getDestinations(holder: ViewHolder) {
+    private fun getDestinations(holder: ViewHolder, position: Int) {
         val urlsApi = RetrofitHelper.getInstance().create(IService::class.java)
         val call: Call<ArrayList<URL>> = urlsApi.getURLs()
         call.enqueue(object : Callback<ArrayList<URL>> {
@@ -304,7 +306,7 @@ class LessonsRecAdapter(private val lessons: List<Lesson>,
                 response: Response<ArrayList<URL>>
             ) {
                 if (response.code() == 200 && response.isSuccessful && response.body() != null) {
-                    getWords(response, holder)
+                    getWords(response, holder, position)
                 } else {
                     //server error
                     holder.firstLoadingStartBtn.revertAnimation()
@@ -320,22 +322,23 @@ class LessonsRecAdapter(private val lessons: List<Lesson>,
 
     private fun getWords(
         response: Response<ArrayList<URL>>,
-        holder: ViewHolder
+        holder: ViewHolder,
+        position: Int
     ) {
         val retrofit = Retrofit.Builder()
             .baseUrl("https://api-generator.retool.com/")
             .addConverterFactory(GsonConverterFactory.create()).build().create(IService::class.java)
-        if (holder.bindingAdapterPosition < response.body()!!.size) {
-            val wordCall: Call<ArrayList<Word>> = retrofit.getWords(response.body()!![holder.bindingAdapterPosition].wordsURL)
+        if (position < response.body()!!.size) {
+            val wordCall: Call<ArrayList<Word>> = retrofit.getWords(response.body()!![position].wordsURL)
             wordCall.enqueue(object : Callback<ArrayList<Word>> {
                 override fun onResponse(
                     call: Call<ArrayList<Word>>,
                     response: Response<ArrayList<Word>>
                 ) {
                     if (response.code() == 200 && response.isSuccessful && response.body() != null) {
-                        saveWordsToDB(response, holder.bindingAdapterPosition)
+                        saveWordsToDB(response, position)
                         val intentDataPack =
-                            ReviewIntentDataPack(lessons[holder.bindingAdapterPosition].title,
+                            ReviewIntentDataPack(lessons[position].title,
                                 ReviewType.REVIEW_ALL,
                                 null, null, null, null)
                         val serializedDataPack = Json.encodeToString(intentDataPack)
