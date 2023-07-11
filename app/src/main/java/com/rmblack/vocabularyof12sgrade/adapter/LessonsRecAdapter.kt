@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,8 +29,6 @@ import kotlinx.serialization.json.Json
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 
 class LessonsRecAdapter(private val lessons: List<Lesson>,
@@ -113,7 +110,6 @@ class LessonsRecAdapter(private val lessons: List<Lesson>,
                     //Say to user the there is no word with repeated mistakes
                     makeSnack("کلمه ای مطابق با تعداد اشتباهات مشخص شده یافت نشد.")
                 }
-
             } else {
                 holder.secondLoadingStartBtn.revertAnimation()
                 //Say to user that he/she should review all words at least 1 time then review repeated mistake words.
@@ -287,7 +283,7 @@ class LessonsRecAdapter(private val lessons: List<Lesson>,
             context.startActivity(intent)
         } else {
             val position = holder.bindingAdapterPosition
-            getDestinations(holder, position)
+            getWords(holder, position)
         }
     }
 
@@ -297,71 +293,43 @@ class LessonsRecAdapter(private val lessons: List<Lesson>,
         )
     }
 
-    private fun getDestinations(holder: ViewHolder, position: Int) {
-        val urlsApi = RetrofitHelper.getInstance().create(IService::class.java)
-        val call: Call<ArrayList<URL>> = urlsApi.getURLs()
-        call.enqueue(object : Callback<ArrayList<URL>> {
-            override fun onResponse(
-                call: Call<ArrayList<URL>>,
-                response: Response<ArrayList<URL>>
-            ) {
-                if (response.code() == 200 && response.isSuccessful && response.body() != null) {
-                    getWords(response, holder, position)
-                } else {
-                    //server error
-                    holder.firstLoadingStartBtn.revertAnimation()
-                    makeSnack("مشکلی در ارتبات با اینترنت پیش آمده ، از اتصال اینترنت خود مطمئن شوید.")
-                }
-            }
-            override fun onFailure(call: Call<ArrayList<URL>>, t: Throwable) {
-                holder.firstLoadingStartBtn.revertAnimation()
-                makeSnack("مشکلی در ارتبات با اینترنت پیش آمده ، از اتصال اینترنت خود مطمئن شوید.")
-            }
-        })
-    }
-
     private fun getWords(
-        response: Response<ArrayList<URL>>,
         holder: ViewHolder,
         position: Int
     ) {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://api-generator.retool.com/")
-            .addConverterFactory(GsonConverterFactory.create()).build().create(IService::class.java)
-        if (position < response.body()!!.size) {
-            val wordCall: Call<ArrayList<Word>> = retrofit.getWords(response.body()!![position].wordsURL)
-            wordCall.enqueue(object : Callback<ArrayList<Word>> {
-                override fun onResponse(
-                    call: Call<ArrayList<Word>>,
-                    response: Response<ArrayList<Word>>
-                ) {
-                    if (response.code() == 200 && response.isSuccessful && response.body() != null) {
-                        saveWordsToDB(response, position)
-                        val intentDataPack =
-                            ReviewIntentDataPack(lessons[position].title,
-                                ReviewType.REVIEW_ALL,
-                                null, null, null, null)
-                        val serializedDataPack = Json.encodeToString(intentDataPack)
-                        val intent = Intent(context, ReviewWords::class.java)
-                        intent.putExtra(DataBaseInfo.BUNDLE_REVIEW_DATA_PACK, serializedDataPack)
-                        holder.firstLoadingStartBtn.revertAnimation()
-                        context.startActivity(intent)
-                    } else {
-                        //server error
-                        holder.firstLoadingStartBtn.revertAnimation()
-                        makeSnack("مشکلی در ارتبات با اینترنت پیش آمده ، از اتصال اینترنت خود مطمئن شوید.")
-                    }
-                }
-                override fun onFailure(call: Call<ArrayList<Word>>, t: Throwable) {
+        val retrofit = RetrofitHelper.getInstance().create(IService::class.java)
+        val wordCall: Call<ArrayList<Word>> = retrofit.getWords(lessons[position].relativeWordsURL)
+        wordCall.enqueue(object : Callback<ArrayList<Word>> {
+            override fun onResponse(
+                call: Call<ArrayList<Word>>,
+                response: Response<ArrayList<Word>>
+            ) {
+                if (response.code() == 200 && response.isSuccessful && response.body() != null) {
+                    saveWordsToDB(response, position)
+                    val intentDataPack =
+                        ReviewIntentDataPack(lessons[position].title,
+                            ReviewType.REVIEW_ALL,
+                            null, null, null, null)
+                    val serializedDataPack = Json.encodeToString(intentDataPack)
+                    val intent = Intent(context, ReviewWords::class.java)
+                    intent.putExtra(DataBaseInfo.BUNDLE_REVIEW_DATA_PACK, serializedDataPack)
                     holder.firstLoadingStartBtn.revertAnimation()
-                    makeSnack("مشکلی در ارتبات با اینترنت پیش آمده ، از اتصال اینترنت خود مطمئن شوید.")
+                    context.startActivity(intent)
+                } else {
+                    //server error
+                    holder.firstLoadingStartBtn.revertAnimation()
+                    makeSnack("مشکلی در سرور پیش آمده ، در حال رفع آن هستیم.")
                 }
-            })
-        } else {
-            //A problem in server is occurred
-            holder.firstLoadingStartBtn.revertAnimation()
-            makeSnack("مشکلی در سرور پیش آمده در حال رفع آن هستیم.")
-        }
+            }
+            override fun onFailure(call: Call<ArrayList<Word>>, t: Throwable) {
+                holder.firstLoadingStartBtn.revertAnimation()
+                if (t.message == "Expected BEGIN_ARRAY but was BEGIN_OBJECT at line 1 column 2 path $") {
+                    makeSnack("مشکلی در سرور پیش آمده ، در حال رفع آن هستیم.")
+                } else {
+                    makeSnack("از اتصال اینترنت خود مطمئن شوید ، سپس مجددا تلاش کنید.")
+                }
+            }
+        })
     }
 
     private fun saveWordsToDB(

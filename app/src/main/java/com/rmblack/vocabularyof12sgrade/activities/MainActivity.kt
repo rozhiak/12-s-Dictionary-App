@@ -1,6 +1,5 @@
 package com.rmblack.vocabularyof12sgrade.activities
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
@@ -12,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rmblack.vocabularyof12sgrade.R
 import com.rmblack.vocabularyof12sgrade.adapter.LessonsRecAdapter
 import com.rmblack.vocabularyof12sgrade.databinding.ActivityMainBinding
-import com.rmblack.vocabularyof12sgrade.utils.DataBaseInfo
 import com.rmblack.vocabularyof12sgrade.viewmodels.MainViewModel
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -31,9 +29,8 @@ class MainActivity : AppCompatActivity() {
         window.navigationBarColor = ContextCompat.getColor(this, R.color.teeth_white)
         initializeLessons(savedInstanceState)
 
-
         //Delete the line below
-        getSharedPreferences(DataBaseInfo.SP_NAME, Context.MODE_PRIVATE).edit().clear().commit()
+//        getSharedPreferences(DataBaseInfo.SP_NAME, Context.MODE_PRIVATE).edit().clear().commit()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

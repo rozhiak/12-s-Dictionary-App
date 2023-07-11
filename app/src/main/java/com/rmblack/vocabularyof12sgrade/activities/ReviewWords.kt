@@ -175,7 +175,7 @@ class ReviewWords : AppCompatActivity() {
                 viewModel.updateCurPos(position)
                 if (wordsViewPager.scrollState != 0) {
                     binding.wordsViewPager.post {
-                        wordsAdapter.setIconsWhenSwiping(position-1)
+                        wordsAdapter.setIconsWhenSwiping(position - 1)
                     }
                     hidePreviousWordAnswer(words, position)
                 }

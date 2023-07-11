@@ -4,6 +4,7 @@ package com.rmblack.vocabularyof12sgrade.models
 data class Lesson(val number: String,
                   val title: String,
                   val lessonImage: Int,
+                  val relativeWordsURL: String,
                   var visibility: Boolean = false,
                   var firstSwitch: Boolean = false,
                   var secondSwitch: Boolean  = false,

@@ -23,6 +23,13 @@ class WordAdapter(private val wordList : ArrayList<Word>,
 
     private lateinit var holder: WordVH
 
+    private lateinit var recyclerView: RecyclerView
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        this.recyclerView = recyclerView
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordVH {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.word_row, parent, false)
         return WordVH(view)
@@ -60,6 +67,9 @@ class WordAdapter(private val wordList : ArrayList<Word>,
         if (wordList[position].answerVisibility) {
             holder.showAnswerImg.setImageResource(R.drawable.open_eye)
             holder.showAnswerImg.setBackgroundResource(R.color.purple)
+        } else {
+            holder.showAnswerImg.setImageResource(R.drawable.close_eye_icon)
+            holder.showAnswerImg.setBackgroundResource(R.color.white)
         }
         if (wordList[position].wordState == null) {
             holder.checkImg.setImageResource(R.drawable.check_icon)
@@ -132,6 +142,14 @@ class WordAdapter(private val wordList : ArrayList<Word>,
         wordList[position].wordState = false
         reviewWords.changeNumOfMistakes(true)
         reviewWords.changeNumOfRemaining(false)
+        if (position < wordList.size - 1) {
+            recyclerView.post {
+                recyclerView.smoothScrollToPosition(position + 1)
+            }
+            if (wordList[position].answerVisibility) {
+                hide(holder)
+            }
+        }
     }
 
     private fun checkCardClick(
@@ -182,6 +200,14 @@ class WordAdapter(private val wordList : ArrayList<Word>,
         wordList[position].wordState = true
         reviewWords.changeNumOfStudied(true)
         reviewWords.changeNumOfRemaining(false)
+        if (position < wordList.size - 1) {
+            recyclerView.post {
+                recyclerView.smoothScrollToPosition(position + 1)
+            }
+            if (wordList[position].answerVisibility) {
+                hide(holder)
+            }
+        }
     }
 
     private fun showAnswer(
@@ -208,8 +234,6 @@ class WordAdapter(private val wordList : ArrayList<Word>,
 
     private fun hide(holder: WordVH) {
         resizeWordCard(holder, 80, 190)
-        holder.showAnswerImg.setImageResource(R.drawable.close_eye_icon)
-        holder.showAnswerImg.setBackgroundResource(R.color.white)
         changeEyeIcon(false, holder)
     }
 
