@@ -171,13 +171,15 @@ class ReviewWords : AppCompatActivity() {
                 positionOffset: Float,
                 positionOffsetPixels: Int
             ) {
-                super.onPageScrolled(position, positionOffset, positionOffsetPixels)
-                viewModel.updateCurPos(position)
-                if (wordsViewPager.scrollState != 0) {
-                    binding.wordsViewPager.post {
-                        wordsAdapter.setIconsWhenSwiping(position - 1)
+                if (position < words.size - 1) {
+                    super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+                    viewModel.updateCurPos(position)
+                    if (wordsViewPager.scrollState != 0) {
+                        binding.wordsViewPager.post {
+                            wordsAdapter.setIconsWhenSwiping(position - 1)
+                        }
+                        hidePreviousWordAnswer(words, position)
                     }
-                    hidePreviousWordAnswer(words, position)
                 }
             }
         })
