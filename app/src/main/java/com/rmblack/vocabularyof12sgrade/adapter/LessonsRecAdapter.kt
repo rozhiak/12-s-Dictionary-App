@@ -271,16 +271,7 @@ class LessonsRecAdapter(private val lessons: List<Lesson>,
 
     private fun reviewAllWords(holder: ViewHolder) {
         if (sp.contains(lessons[holder.bindingAdapterPosition].title)) {
-            //getAndFetchDataToLesson(holder)
-            val intentDataPack =
-                ReviewIntentDataPack(lessons[holder.bindingAdapterPosition].title,
-                ReviewType.REVIEW_ALL,
-                null, null, null, null)
-            val serializedDataPack = Json.encodeToString(intentDataPack)
-            val intent = Intent(context, ReviewWords::class.java)
-            intent.putExtra(DataBaseInfo.BUNDLE_REVIEW_DATA_PACK, serializedDataPack)
-            holder.firstLoadingStartBtn.revertAnimation()
-            context.startActivity(intent)
+            startReview(holder.bindingAdapterPosition, holder)
         } else {
             val position = holder.bindingAdapterPosition
             getWords(holder, position)
@@ -306,15 +297,7 @@ class LessonsRecAdapter(private val lessons: List<Lesson>,
             ) {
                 if (response.code() == 200 && response.isSuccessful && response.body() != null) {
                     saveWordsToDB(response, position)
-                    val intentDataPack =
-                        ReviewIntentDataPack(lessons[position].title,
-                            ReviewType.REVIEW_ALL,
-                            null, null, null, null)
-                    val serializedDataPack = Json.encodeToString(intentDataPack)
-                    val intent = Intent(context, ReviewWords::class.java)
-                    intent.putExtra(DataBaseInfo.BUNDLE_REVIEW_DATA_PACK, serializedDataPack)
-                    holder.firstLoadingStartBtn.revertAnimation()
-                    context.startActivity(intent)
+                    startReview(position, holder)
                 } else {
                     //server error
                     holder.firstLoadingStartBtn.revertAnimation()
@@ -330,6 +313,23 @@ class LessonsRecAdapter(private val lessons: List<Lesson>,
                 }
             }
         })
+    }
+
+    private fun startReview(
+        position: Int,
+        holder: ViewHolder
+    ) {
+        val intentDataPack =
+            ReviewIntentDataPack(
+                lessons[position].title,
+                ReviewType.REVIEW_ALL,
+                null, null, null, null
+            )
+        val serializedDataPack = Json.encodeToString(intentDataPack)
+        val intent = Intent(context, ReviewWords::class.java)
+        intent.putExtra(DataBaseInfo.BUNDLE_REVIEW_DATA_PACK, serializedDataPack)
+        holder.firstLoadingStartBtn.revertAnimation()
+        context.startActivity(intent)
     }
 
     private fun saveWordsToDB(

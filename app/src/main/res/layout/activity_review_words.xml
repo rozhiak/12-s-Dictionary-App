@@ -151,7 +151,6 @@
             app:layout_constraintEnd_toEndOf="@id/studied_tv"
             android:layout_marginTop="8dp"/>
 
-
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/gray_circle"
             android:layout_width="wrap_content"
@@ -187,7 +186,6 @@
             app:layout_constraintEnd_toEndOf="@id/remaining_tv"
             android:layout_marginTop="8dp"/>
 
-
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/orange_circle"
             android:layout_width="wrap_content"
@@ -211,7 +209,6 @@
             app:layout_constraintStart_toStartOf="@id/orange_circle"
             android:layout_marginTop="8dp" />
 
-
         <androidx.viewpager2.widget.ViewPager2
             android:layoutDirection="rtl"
             android:id="@+id/wordsViewPager"
@@ -233,7 +230,6 @@
             app:layout_constraintStart_toStartOf="@id/mistakes_tv"
             app:layout_constraintEnd_toEndOf="@id/mistakes_tv"
             android:layout_marginTop="8dp"/>
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

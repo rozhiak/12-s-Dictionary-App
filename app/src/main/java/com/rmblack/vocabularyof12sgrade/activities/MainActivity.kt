@@ -28,9 +28,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         window.navigationBarColor = ContextCompat.getColor(this, R.color.teeth_white)
         initializeLessons(savedInstanceState)
-
-        //Delete the line below
-//        getSharedPreferences(DataBaseInfo.SP_NAME, Context.MODE_PRIVATE).edit().clear().commit()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

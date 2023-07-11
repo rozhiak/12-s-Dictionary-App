@@ -24,6 +24,7 @@
         android:maxHeight="380dp">
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:padding="7dp"
             android:translationZ="10dp"
             android:layout_gravity="center"
             android:id="@+id/word_tv"
@@ -65,6 +66,7 @@
                 android:layout_height="match_parent">
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:padding="3dp"
                     android:lineSpacingExtra="6dp"
                     android:textDirection="rtl"
                     android:textStyle="normal"
