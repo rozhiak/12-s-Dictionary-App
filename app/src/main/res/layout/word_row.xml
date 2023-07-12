@@ -24,7 +24,7 @@
         android:maxHeight="380dp">
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:padding="7dp"
+            android:padding="10dp"
             android:translationZ="10dp"
             android:layout_gravity="center"
             android:id="@+id/word_tv"
