@@ -171,7 +171,7 @@ class ReviewWords : AppCompatActivity() {
                 positionOffset: Float,
                 positionOffsetPixels: Int
             ) {
-                if (position < words.size - 1) {
+                if (position < words.size - 1 && positionOffset > 0.0) {
                     super.onPageScrolled(position, positionOffset, positionOffsetPixels)
                     viewModel.updateCurPos(position)
                     if (wordsViewPager.scrollState != 0) {
