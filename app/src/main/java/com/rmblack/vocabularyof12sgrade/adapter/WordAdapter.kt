@@ -31,7 +31,7 @@ class WordAdapter(private val wordList : ArrayList<Word>,
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordVH {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.word_row, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_word_row, parent, false)
         return WordVH(view)
     }
 
